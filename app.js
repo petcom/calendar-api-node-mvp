@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const cors = require('cors');
 
 const app = express();
 const PORT = 3000;
@@ -19,6 +20,10 @@ const GROUPS_FILE = path.join(__dirname, 'storage', 'groups.json');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
+//allow access from other port for development only
+app.use(cors({
+  origin: 'http://localhost:2368'
+}));
 
 // Helper functions
 async function loadJson(file, fallback = []) {

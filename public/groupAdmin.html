@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Group Administration</title>
+</head>
+<body>
+  <h1>Group Administration</h1>
+
+  <h2>Create New Group</h2>
+  <form id="createGroupForm">
+    <label>Group Name:</label><br>
+    <input type="text" name="groupName" required><br><br>
+    <button type="submit">Create Group</button>
+  </form>
+
+  <hr>
+
+  <h2>Assign Users to a Group</h2>
+  <form id="assignUserForm">
+    <label>Select Group:</label><br>
+    <select id="groupSelect" name="groupId" required></select><br><br>
+
+    <label>Select Users:</label><br>
+    <div id="userCheckboxes"></div><br>
+
+    <button type="submit">Assign Users to Group</button>
+  </form>
+
+  <hr>
+
+  <h2>Current Groups and Users</h2>
+  <div id="groupHierarchy"></div>
+
+  <script>
+    async function loadGroupsAndUsers() {
+      const [groups, users] = await Promise.all([
+        fetch('/api/groups').then(res => res.json()),
+        fetch('/api/users').then(res => res.json())
+      ]);
+
+      const groupSelect = document.getElementById('groupSelect');
+      groupSelect.innerHTML = '';
+
+      groups.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = group.name;
+        groupSelect.appendChild(option);
+      });
+
+      const userCheckboxes = document.getElementById('userCheckboxes');
+      userCheckboxes.innerHTML = '';
+
+      users.forEach(user => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <label>
+            <input type="checkbox" name="username" value="${user.username}">
+            ${user.username}
+          </label>
+        `;
+        userCheckboxes.appendChild(div);
+      });
+
+      // Show group hierarchy
+      const hierarchyDiv = document.getElementById('groupHierarchy');
+      hierarchyDiv.innerHTML = '';
+
+      const groupMap = {};
+      groups.forEach(g => groupMap[g.id] = { ...g, users: [] });
+
+      users.forEach(u => {
+        (u.groups || []).forEach(groupId => {
+          if (groupMap[groupId]) {
+            groupMap[groupId].users.push(u.username);
+          }
+        });
+      });
+
+      for (const groupId in groupMap) {
+        const group = groupMap[groupId];
+        const groupBlock = document.createElement('div');
+        groupBlock.innerHTML = `
+          <h3>${group.name}</h3>
+          <p>Users: ${group.users.length > 0 ? group.users.join(', ') : 'No users assigned.'}</p>
+        `;
+        hierarchyDiv.appendChild(groupBlock);
+      }
+    }
+
+    // Handle creating new groups
+    document.getElementById('createGroupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const groupName = formData.get('groupName');
+
+      await fetch('/api/groups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: groupName })
+      });
+
+      alert('Group created successfully!');
+      await loadGroupsAndUsers();
+    });
+
+    // Handle assigning users to groups
+    document.getElementById('assignUserForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      const groupId = formData.get('groupId');
+      const selectedUsers = Array.from(formData.getAll('username'));
+
+      if (selectedUsers.length === 0) {
+        alert('Please select at least one user.');
+        return;
+      }
+
+      await fetch('/api/groups/assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ groupId, usernames: selectedUsers })
+      });
+
+      alert('Users assigned to group successfully!');
+      await loadGroupsAndUsers();
+    });
+
+    // Initial load
+    loadGroupsAndUsers();
+  </script>
+</body>
+</html>

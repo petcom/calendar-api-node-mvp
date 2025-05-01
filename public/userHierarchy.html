@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User and Group Hierarchy</title>
+</head>
+<body>
+  <h1>User & Group Hierarchy</h1>
+
+  <div id="hierarchyOutput">Loading...</div>
+
+  <script>
+    async function loadHierarchy() {
+      try {
+        const [groups, users] = await Promise.all([
+          fetch('/api/groups').then(res => res.json()),
+          fetch('/api/users').then(res => res.json())
+        ]);
+
+        const groupMap = {};
+        groups.forEach(group => {
+          groupMap[group.id] = {
+            name: group.name,
+            users: []
+          };
+        });
+
+        users.forEach(user => {
+          if (Array.isArray(user.groups)) {
+            user.groups.forEach(groupId => {
+              if (groupMap[groupId]) {
+                groupMap[groupId].users.push(user.username);
+              }
+            });
+          }
+        });
+
+        const outputDiv = document.getElementById('hierarchyOutput');
+        outputDiv.innerHTML = '';
+
+        for (const groupId in groupMap) {
+          const group = groupMap[groupId];
+          const section = document.createElement('div');
+          section.innerHTML = `
+            <h2>${group.name}</h2>
+            <p>Users: ${group.users.length > 0 ? group.users.join(', ') : 'No users in this group.'}</p>
+          `;
+          outputDiv.appendChild(section);
+        }
+
+      } catch (err) {
+        document.getElementById('hierarchyOutput').innerHTML = '<p>Error loading data.</p>';
+        console.error(err);
+      }
+    }
+
+    loadHierarchy();
+  </script>
+</body>
+</html>

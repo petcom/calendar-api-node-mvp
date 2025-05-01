@@ -1,0 +1,20 @@
+{
+  "name": "calendar-api-node-mvp",
+  "version": "1.0.0",
+  "description": "MVP Calendar API with simple admin form",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "fs-extra": "^11.3.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

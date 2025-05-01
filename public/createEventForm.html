@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Event</title>
+</head>
+<body>
+  <h1>Create New Event</h1>
+
+  <form id="createEventForm" action="/api/events" method="POST">
+    <label>Token:</label><br>
+    <input type="text" id="tokenField" name="token" readonly required><br><br>
+
+    <label>Title:</label><br>
+    <input type="text" name="title" required><br><br>
+
+    <label>Description:</label><br>
+    <input type="text" name="description" required><br><br>
+
+    <label>Date (YYYY-MM-DD):</label><br>
+    <input type="date" name="date" required><br><br>
+
+    <label>Tags (comma separated):</label><br>
+    <input type="text" name="tags"><br><br>
+
+    <button type="submit">Create Event</button>
+  </form>
+
+  <p><a href="/groupAdmin.html">Go to Group Administration</a></p>
+
+  <script>
+    // Automatically pull token from URL and fill it into the form
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+
+    if (token) {
+      document.getElementById('tokenField').value = token;
+    } else {
+      alert('No token found! Please login first.');
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>

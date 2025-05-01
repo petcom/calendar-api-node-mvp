@@ -1,0 +1,51 @@
+{{! This template renders at /events/ }}
+{{! You must map it via routes.yaml }}
+
+{{! Include header/footer like other templates }}
+{{> "header"}}
+
+<main class="content-area">
+  <section class="event-listing">
+    <h1>Upcoming Events</h1>
+    <div id="event-container">
+      <p>Loading events...</p>
+    </div>
+  </section>
+</main>
+
+{{> "footer"}}
+
+<script>
+
+const API_TOKEN = 'c037d7ad1aeb0b3f7f2f72ea5e7ba335';
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const res = await fetch('http://localhost:3000/events?token=${API_TOKEN}'); // secure internal proxy
+      if (!res.ok) throw new Error('Failed to fetch events');
+      const events = await res.json();
+
+      const container = document.getElementById('event-container');
+      if (!events.length) {
+        container.innerHTML = '<p>No upcoming events found.</p>';
+        return;
+      }
+
+      const list = document.createElement('ul');
+      events.forEach(evt => {
+        const item = document.createElement('li');
+        item.innerHTML = `
+          <strong>${evt.title}</strong> – ${evt.date}<br>
+          <em>${evt.description}</em><br>
+          <small>Tags: ${evt.tags?.join(', ') || 'None'}</small>
+        `;
+        list.appendChild(item);
+      });
+      container.innerHTML = '';
+      container.appendChild(list);
+    } catch (err) {
+      console.error('Error loading events:', err);
+      document.getElementById('event-container').innerHTML = '<p>Error loading events.</p>';
+    }
+  });
+</script>

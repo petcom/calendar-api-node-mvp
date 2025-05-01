@@ -1,0 +1,45 @@
+[
+  {
+    "id": "1745867260487",
+    "title": "Event1",
+    "description": "here's a description",
+    "date": "2025-05-01",
+    "tags": [
+      "adam",
+      "sonar",
+      "etc"
+    ]
+  },
+  {
+    "id": "1745868293471",
+    "title": "test",
+    "description": "testdescription",
+    "date": "2025-05-02",
+    "tags": [
+      "adam",
+      "sonar",
+      "etc"
+    ]
+  },
+  {
+    "id": "1745868733910",
+    "title": "test",
+    "description": "testevent",
+    "date": "2025-05-03",
+    "tags": [
+      "adam",
+      "sonar",
+      "etc"
+    ]
+  },
+  {
+    "id": "1745877595209",
+    "title": "test",
+    "description": "test",
+    "date": "2025-05-08",
+    "tags": [
+      "SONAR"
+    ],
+    "groupId": "g1"
+  }
+]

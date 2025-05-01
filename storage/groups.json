@@ -1,0 +1,17 @@
+[
+  {
+    "id": "g1",
+    "name": "Master Admins",
+    "parentId": null
+  },
+  {
+    "id": "g1745877047967",
+    "name": "TestGroup",
+    "parentId": "g1"
+  },
+  {
+    "id": "g1745957679252",
+    "name": "TestGroup2",
+    "parentId": "g1"
+  }
+]

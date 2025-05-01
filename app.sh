@@ -32,7 +32,10 @@ show_help() {
 check_ghost() {
     if ! command -v ghost &> /dev/null; then
         echo -e "${YELLOW}Ghost CLI not found. Installing...${NC}"
-        npm install -g ghost-cli
+        if ! sudo npm install -g ghost-cli; then
+            echo -e "${RED}Failed to install Ghost CLI. Please run: sudo npm install -g ghost-cli${NC}"
+            exit 1
+        fi
     fi
 }
 
@@ -46,13 +49,11 @@ start_services() {
         echo -e "${GREEN}✓ Ghost is already running${NC}"
     else
         echo -e "${YELLOW}Starting Ghost...${NC}"
-        ghost start
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}✓ Ghost started successfully${NC}"
-        else
-            echo -e "${RED}✗ Failed to start Ghost${NC}"
+        if ! ghost start; then
+            echo -e "${RED}✗ Failed to start Ghost. Please check Ghost installation.${NC}"
             exit 1
         fi
+        echo -e "${GREEN}✓ Ghost started successfully${NC}"
     fi
 
     # Start Node.js
@@ -62,7 +63,7 @@ start_services() {
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ Node.js started successfully (PID: $NODE_PID)${NC}"
     else
-        echo -e "${RED}✗ Failed to start Node.js${NC}"
+        echo -e "${RED}✗ Failed to start Node.js application${NC}"
         exit 1
     fi
 }
@@ -75,11 +76,10 @@ stop_services() {
     # Stop Ghost
     if ghost status &> /dev/null; then
         echo -e "${YELLOW}Stopping Ghost...${NC}"
-        ghost stop
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}✓ Ghost stopped successfully${NC}"
-        else
+        if ! ghost stop; then
             echo -e "${RED}✗ Failed to stop Ghost${NC}"
+        else
+            echo -e "${GREEN}✓ Ghost stopped successfully${NC}"
         fi
     else
         echo -e "${GREEN}✓ Ghost is not running${NC}"
@@ -89,11 +89,10 @@ stop_services() {
     NODE_PID=$(pgrep -f "node app.js")
     if [ ! -z "$NODE_PID" ]; then
         echo -e "${YELLOW}Stopping Node.js (PID: $NODE_PID)...${NC}"
-        kill $NODE_PID
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}✓ Node.js stopped successfully${NC}"
-        else
+        if ! kill $NODE_PID; then
             echo -e "${RED}✗ Failed to stop Node.js${NC}"
+        else
+            echo -e "${GREEN}✓ Node.js stopped successfully${NC}"
         fi
     else
         echo -e "${GREEN}✓ Node.js is not running${NC}"
@@ -124,6 +123,12 @@ show_status() {
         echo -e "${RED}✗ Not running${NC}"
     fi
 }
+
+# Check if running with sudo
+if [ "$EUID" -eq 0 ]; then 
+    echo -e "${RED}Please do not run this script as root/sudo${NC}"
+    exit 1
+fi
 
 # Main script logic
 case "$1" in

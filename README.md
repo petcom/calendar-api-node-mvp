@@ -1,27 +1,40 @@
-# Calendar API with Ghost Integration
+# 📅 Calendar API with Ghost Integration
 
-A Node.js-based Calendar API with Ghost CMS integration, featuring a simple admin form interface. This project provides a robust backend for calendar management with the added benefit of Ghost's content management capabilities.
+A **Node.js-based Calendar API** integrated with **Ghost CMS**, featuring a simple admin form interface. This project provides a robust backend for calendar and event management, enhanced by Ghost's content management capabilities.
+
+---
+
+## 🧭 Related Repositories
+
+- **`@petcom/calendar-api-node-mbp`** – *This repository:* Minimum viable product for a simple Node.js-based calendar API  
+- **[`@mittingphx/sonar-az`](https://github.com/mitttingphx/sonar-az)** – Replit-generated frontend public website
+
+---
 
 ## 🚀 Technologies
 
-### Core Technologies
-- **Node.js** - JavaScript runtime environment
-- **Express.js** - Web application framework
-- **Ghost** - Headless CMS for content management
+### Core Stack
+- **Node.js** – JavaScript runtime environment  
+- **Express.js** – Web application framework  
+- **Ghost** – Headless CMS for managing event content  
 
-### Dependencies
-- **bcrypt** (v5.1.1) - Password hashing
-- **bcryptjs** (v3.0.2) - Password hashing (alternative)
-- **body-parser** (v1.20.3) - Request body parsing
-- **express** (v4.21.2) - Web framework
-- **fs-extra** (v11.3.0) - Enhanced file system operations
+### Notable Dependencies
+- **bcrypt** (`v5.1.1`) – Secure password hashing  
+- **bcryptjs** (`v3.0.2`) – JavaScript-based alternative to bcrypt  
+- **body-parser** (`v1.20.3`) – Middleware to parse incoming request bodies  
+- **express** (`v4.21.2`) – Routing and middleware  
+- **fs-extra** (`v11.3.0`) – Extended file system utilities  
+
+---
 
 ## 📋 Prerequisites
 
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- Ghost CLI (installed automatically by the script)
-- Git
+Ensure the following are installed:
+
+- **Node.js** `v14+`  
+- **npm** `v6+`  
+- **Git**  
+- **Ghost CLI** *(automatically installed via script)*  
 
 ## 🛠️ Installation
 
@@ -189,13 +202,16 @@ Detailed API documentation is available in the `/docs` directory.
 
 ## 📄 License
 
-This project is licensed under the ISC License - see the LICENSE file for details.
+This project is not currently released for anyuse.  It is a private project under developmnt.
 
 ## 👥 Authors
 
-- Your Name - Initial work
+Add your name(s) here, e.g.:
+- Scott Mitting – @mittingphx
 
 ## 🙏 Acknowledgments
 
 - Ghost CMS team for their excellent documentation
-- Express.js community for their support 
+- Express.js community for their support
+
+  

@@ -1,12 +1,16 @@
 # 📅 Calendar API with Ghost Integration
 
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D14.x-brightgreen)](https://nodejs.org/)
+[![License: Unreleased](https://img.shields.io/badge/license-unreleased-lightgrey)]()
+[![Status](https://img.shields.io/badge/status-in%20development-yellow)]()
+
 A **Node.js-based Calendar API** integrated with **Ghost CMS**, featuring a simple admin form interface. This project provides a robust backend for calendar and event management, enhanced by Ghost's content management capabilities.
 
 ---
 
 ## 🧭 Related Repositories
 
-- **`@petcom/calendar-api-node-mbp`** – *This repository:* Minimum viable product for a simple calendar API  
+- **[`@petcom/calendar-api-node-mvp`](https://github.com/petcom/calendar-api-node-mvp)** – *This repository:* Backend calendar API MVP  
 - **[`@mittingphx/sonar-az`](https://github.com/mittingphx/sonar-az)** – Replit-generated frontend public website
 
 ---
@@ -29,18 +33,18 @@ A **Node.js-based Calendar API** integrated with **Ghost CMS**, featuring a simp
 
 ## 📋 Prerequisites
 
-Ensure the following are installed:
-
 - **Node.js** `v14+`  
 - **npm** `v6+`  
 - **Git**  
-- **Ghost CLI** *(automatically installed via script)*  
+- **Ghost CLI** (auto-installed by the script)
+
+---
 
 ## 🛠️ Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/calendar-api-node-mvp.git
+git clone https://github.com/petcom/calendar-api-node-mvp.git
 cd calendar-api-node-mvp
 ```
 
@@ -53,58 +57,28 @@ npm install
 
 The project includes a service management script (`app.sh`) that handles both the Node.js application and Ghost CMS. The script provides three main commands: `start`, `stop`, and `status`.
 
+
 ### Windows Setup
 
-1. **Using Git Bash (Recommended)**
-   - Install [Git for Windows](https://git-scm.com/download/win)
-   - Open Git Bash in the project directory
-   - Make the script executable:
-     ```bash
-     chmod +x app.sh
-     ```
-   - Run the script:
-     ```bash
-     ./app.sh [command]
-     ```
-
-2. **Using WSL (Windows Subsystem for Linux)**
-   - Install [WSL](https://docs.microsoft.com/en-us/windows/wsl/install)
-   - Open WSL terminal
-   - Navigate to the project directory
-   - Make the script executable:
-     ```bash
-     chmod +x app.sh
-     ```
-   - Run the script:
-     ```bash
-     ./app.sh [command]
-     ```
+**Using WSL (Windows Subsystem for Linux)**
+```bash
+chmod +x app.sh
+./app.sh [command]
+```
 
 ### macOS Setup
 
-1. Open Terminal
-2. Navigate to the project directory
-3. Make the script executable:
-   ```bash
-   chmod +x app.sh
-   ```
-4. Run the script:
-   ```bash
-   ./app.sh [command]
-   ```
+```bash
+chmod +x app.sh
+./app.sh [command]
+```
 
 ### Linux Setup
 
-1. Open Terminal
-2. Navigate to the project directory
-3. Make the script executable:
-   ```bash
-   chmod +x app.sh
-   ```
-4. Run the script:
-   ```bash
-   ./app.sh [command]
-   ```
+```bash
+chmod +x app.sh
+./app.sh [command]
+```
 
 ## 📝 Available Commands
 
@@ -206,7 +180,7 @@ This project is not currently released for anyuse.  It is a private project unde
 
 ## 👥 Authors
 
-Add your name(s) here, e.g.:
+- Adam Petty - @petcom
 - Scott Mitting – @mittingphx
 
 ## 🙏 Acknowledgments

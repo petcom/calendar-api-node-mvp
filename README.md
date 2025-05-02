@@ -6,8 +6,8 @@ A **Node.js-based Calendar API** integrated with **Ghost CMS**, featuring a simp
 
 ## 🧭 Related Repositories
 
-- **`@petcom/calendar-api-node-mbp`** – *This repository:* Minimum viable product for a simple Node.js-based calendar API  
-- **[`@mittingphx/sonar-az`](https://github.com/mitttingphx/sonar-az)** – Replit-generated frontend public website
+- **`@petcom/calendar-api-node-mbp`** – *This repository:* Minimum viable product for a simple calendar API  
+- **[`@mittingphx/sonar-az`](https://github.com/mittingphx/sonar-az)** – Replit-generated frontend public website
 
 ---
 

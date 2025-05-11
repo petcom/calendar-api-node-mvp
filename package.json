@@ -1,21 +1,28 @@
 {
   "name": "calendar-api-node-mvp",
   "version": "1.0.0",
-  "description": "MVP Calendar API with simple admin form",
+  "description": "MVP Calendar API with modular routes, image upload, and group permissions",
   "main": "app.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "express": "^4.21.2",
-    "fs-extra": "^11.3.0"
+    "fs-extra": "^11.3.0",
+    "multer": "^1.4.5-lts.2",
+    "sharp": "^0.34.1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
 }

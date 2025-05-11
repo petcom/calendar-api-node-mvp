@@ -8,7 +8,8 @@
       "adam",
       "sonar",
       "etc"
-    ]
+    ],
+    "image": ""
   },
   {
     "id": "1745868293471",
@@ -19,7 +20,8 @@
       "adam",
       "sonar",
       "etc"
-    ]
+    ],
+    "image": ""
   },
   {
     "id": "1745868733910",
@@ -30,7 +32,8 @@
       "adam",
       "sonar",
       "etc"
-    ]
+    ],
+    "image": ""
   },
   {
     "id": "1745877595209",
@@ -40,6 +43,142 @@
     "tags": [
       "SONAR"
     ],
-    "groupId": "g1"
+    "groupId": "g1",
+    "image": ""
+  },
+  {
+    "id": "1746747888483",
+    "title": "SONAR open house",
+    "description": "This is SONAR's open house where we will dance and sign and be merry",
+    "date": "2025-06-04",
+    "tags": [
+      "SONAR"
+    ],
+    "groupId": "g1",
+    "image": "",
+    "thumbnail": "http://localhost:3000/public/images/image-1746760386964-66857675-thumb.JPG"
+  },
+  {
+    "id": "1746747908347",
+    "title": "SONAR sound event",
+    "description": "This is sonar's sound event 2025",
+    "date": "2025-06-12",
+    "tags": [
+      "SONAR"
+    ],
+    "groupId": "g1",
+    "image": "",
+    "thumbnail": "http://localhost:3000/public/images/image-1746760386964-66857675-thumb.JPG"
+  },
+  {
+    "id": "1746752730547",
+    "title": "test",
+    "description": "testytest",
+    "date": "2025-06-06",
+    "tags": [
+      "SONAR",
+      "beefy"
+    ],
+    "groupId": "g1",
+    "image": "/public/images/image-1746752728611-603279391.JPG",
+    "thumbnail": "http://localhost:3000/public/images/image-1746760386964-66857675-thumb.JPG"
+  },
+  {
+    "id": "1746754786544",
+    "title": "test",
+    "description": "Steve is great",
+    "date": "2025-06-18",
+    "tags": [
+      "SONAR",
+      "steve"
+    ],
+    "groupId": "g1",
+    "image": "http://localhost:3000/public/images/image-1746754775090-799924294.JPG",
+    "thumbnail": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG"
+  },
+  {
+    "id": "1746760336752",
+    "title": "asdfasdf",
+    "description": "asdfadsf",
+    "date": "2025-06-11",
+    "tags": [
+      "SONAR",
+      "beefy"
+    ],
+    "groupId": "g1",
+    "image": "http://localhost:3000/public/images/image-1746760334957-871640587.JPG",
+    "thumbnail": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG"
+  },
+  {
+    "id": "1746760388188",
+    "title": "sdfwerwerwer",
+    "description": "aasdfadsf",
+    "date": "2025-06-24",
+    "tags": [
+      "SONAR",
+      "steve"
+    ],
+    "groupId": "g1",
+    "image": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG",
+    "thumbnail": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG"
+  },
+  {
+    "id": "1746763965354",
+    "title": "adsfadf",
+    "description": "adsfadsf",
+    "date": "2025-06-06",
+    "tags": [
+      "SONAR"
+    ],
+    "groupId": "g1",
+    "image": ""
+  },
+  {
+    "id": "1746764004242",
+    "title": "hello there are more",
+    "description": "testing the script here",
+    "date": "2025-07-11",
+    "tags": [
+      "SONAR"
+    ],
+    "groupId": "g1",
+    "image": "http://localhost:3000/public/images/image-1746763998302-961384680.JPG"
+  },
+  {
+    "id": "1746765591762",
+    "title": "test file",
+    "description": "test file",
+    "date": "2025-06-06",
+    "tags": [
+      "SONAR",
+      "beefy"
+    ],
+    "groupId": "g1",
+    "image": "http://localhost:3000/api/images/image-1746765588814-539743137.JPG"
+  },
+  {
+    "id": "1746765896858",
+    "title": "tesst",
+    "description": "This is SONAR's open house where we will dance and sign and be merry",
+    "date": "2025-06-10",
+    "tags": [
+      "SONAR",
+      "beefy"
+    ],
+    "groupId": "g1",
+    "image": "http://localhost:3000/api/images/image-1746765894594-39822487.JPG",
+    "thumbnail": "http://localhost:3000/api/images/image-1746765894594-39822487-thumb.JPG"
+  },
+  {
+    "id": "1746766714824",
+    "title": "asdfasdf",
+    "description": "asdfasf",
+    "date": "2025-06-05",
+    "tags": [
+      "SONAR"
+    ],
+    "groupId": "g1",
+    "image": "http://localhost:3000/api/images/image-1746766713639-135882260.JPG",
+    "thumbnail": "http://localhost:3000/api/images/image-1746766713639-135882260-thumb.JPG"
   }
 ]

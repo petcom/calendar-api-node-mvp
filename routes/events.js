@@ -13,92 +13,70 @@ const TOKENS_FILE = path.join(__dirname, '..', 'storage', 'tokens.json');
 
 // GET /api/events?token=...&tag=optionalTag
 router.get('/events', async (req, res) => {
-    try {
-      const token = req.query.token;
-      const filterTag = req.query.tag?.toLowerCase();
-  
-      if (!token) {
-        console.warn('[EVENTS] Missing token');
-        return res.status(400).send('Missing token');
-      }
-  
-      const tokens = await loadJson(TOKENS_FILE);
-      const tokenRecord = tokens.find(t => t.token === token);
-      if (!tokenRecord) {
-        console.warn('[EVENTS] Invalid token:', token);
-        return res.status(403).send('Invalid token');
-      }
-  
-      const users = await loadJson(USERS_FILE);
-      const user = users.find(u => u.username === tokenRecord.username);
-      if (!user) {
-        console.warn('[EVENTS] User not found for token:', token);
-        return res.status(403).send('User not found');
-      }
-  
-      console.log(`[EVENTS] ${user.username} requested events`);
-  
-      const allEvents = await loadJson(EVENTS_FILE);
-      console.log(`[EVENTS] Loaded ${allEvents.length} total events`);
-  
-      // Filter by user's groups
-      let visibleEvents = user.groups.includes('g1')
-        ? allEvents
-        : allEvents.filter(e => user.groups.includes(e.groupId));
-  
-      console.log(`[EVENTS] ${visibleEvents.length} events visible to group(s):`, user.groups);
-  
-      // Filter by date range
-      const now = new Date();
-      const defaultEnd = new Date();
-      defaultEnd.setDate(now.getDate() + 14);
-  
-      const startDate = req.query.startDate ? new Date(req.query.startDate) : now;
-      const endDate = req.query.endDate ? new Date(req.query.endDate) : defaultEnd;
-  
-      console.log(`[EVENTS] Filtering from ${startDate.toISOString()} to ${endDate.toISOString()}`);
-  
-      visibleEvents = visibleEvents.filter(e => {
-        if (!e.date) return false;
-        const eventDate = new Date(`${e.date}T00:00:00`);
-        return !isNaN(eventDate) && eventDate >= startDate && eventDate <= endDate;
-      });
-  
-      console.log(`[EVENTS] ${visibleEvents.length} events after date filtering`);
-  
-  // Filter by tag if provided
-    if (filterTag) {
-        console.log(`[EVENTS] Filtering by tag "${filterTag}"`);
-        visibleEvents = visibleEvents.filter(e =>
-        Array.isArray(e.tags) &&
-        e.tags.map(t => t.toLowerCase()).includes(filterTag)
-        );
-        }
-  
-        console.log(`[EVENTS] ${visibleEvents.length} events after tag filtering for: "${filterTag}"`);
-      
-  
-      if (visibleEvents.length > 0) {
-        console.log(`[EVENTS] Returning ${visibleEvents.length} event(s). Sample:`, visibleEvents[0]);
-      } else {
-        console.log('[EVENTS] No matching events found.');
-      }
-  
-      // ... after tag filtering
-      visibleEvents = visibleEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-      
-      console.log(`[EVENTS] ${visibleEvents.length} events after sorting for`);
-      
+  try {
+    const token = req.query.token;
+    const tagParam = req.query.tag;
 
-      res.json(visibleEvents);
-    } catch (err) {
-      console.error('[EVENTS] Unexpected error:', err);
-      res.status(500).send('Internal Server Error');
+    if (!token) {
+      console.warn('[EVENTS] Missing token');
+      return res.status(400).send('Missing token');
     }
-  });
 
+    const tokens = await loadJson(TOKENS_FILE);
+    const tokenRecord = tokens.find(t => t.token === token);
+    if (!tokenRecord) {
+      console.warn('[EVENTS] Invalid token:', token);
+      return res.status(403).send('Invalid token');
+    }
 
-  // GET /api/events/upcoming?token=...&tag=tag1&tag=tag2
+    const users = await loadJson(USERS_FILE);
+    const user = users.find(u => u.username === tokenRecord.username);
+    if (!user) {
+      console.warn('[EVENTS] User not found for token:', token);
+      return res.status(403).send('User not found');
+    }
+
+    console.log(`[EVENTS] ${user.username} requested events`);
+
+    const allEvents = await loadJson(EVENTS_FILE);
+    console.log(`[EVENTS] Loaded ${allEvents.length} total events`);
+
+    // Filter by user's groups
+    const visibleEvents = user.groups.includes('g1')
+      ? allEvents
+      : allEvents.filter(e => user.groups.includes(e.groupId));
+
+    console.log(`[EVENTS] ${visibleEvents.length} events visible to group(s):`, user.groups);
+
+    // Date range parsing
+    const now = new Date();
+    const defaultEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const startDate = req.query.startDate ? new Date(req.query.startDate) : now;
+    const endDate = req.query.endDate ? new Date(req.query.endDate) : defaultEnd;
+
+    console.log(`[EVENTS] Filtering from ${startDate.toISOString()} to ${endDate.toISOString()}`);
+
+    const filteredEvents = filterAndSortEvents(visibleEvents, {
+      startDate,
+      endDate,
+      tagArray: tagParam ? [tagParam] : []
+    });
+
+    console.log(`[EVENTS] ${filteredEvents.length} events after filtering and sorting`);
+    if (filteredEvents.length > 0) {
+      console.log(`[EVENTS] Returning sample event:`, filteredEvents[0]);
+    } else {
+      console.log('[EVENTS] No matching events found.');
+    }
+
+    res.json(filteredEvents);
+  } catch (err) {
+    console.error('[EVENTS] Unexpected error:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// GET /api/events/upcoming?token=...&tag=tag1&tag=tag2
 router.get('/events/upcoming', async (req, res) => {
   try {
     const token = req.query.token;
@@ -126,31 +104,22 @@ router.get('/events/upcoming', async (req, res) => {
     const allEvents = await loadJson(EVENTS_FILE);
 
     // Filter by group access
-    let visibleEvents = user.groups.includes('g1')
+    const visibleEvents = user.groups.includes('g1')
       ? allEvents
       : allEvents.filter(e => user.groups.includes(e.groupId));
 
-    const today = new Date().toISOString().split('T')[0];
-
-    visibleEvents = visibleEvents.filter(e => new Date(e.date) >= new Date(today));
-
-    // Normalize tag parameters to array
+    // Normalize tag input
     const tagArray = tagParams
       ? Array.isArray(tagParams)
-        ? tagParams.map(t => t.toLowerCase())
-        : [tagParams.toLowerCase()]
-      : null;
+        ? tagParams
+        : [tagParams]
+      : [];
 
-    if (tagArray && tagArray.length > 0) {
-      visibleEvents = visibleEvents.filter(e =>
-        Array.isArray(e.tags) &&
-        tagArray.every(tag => e.tags.map(t => t.toLowerCase()).includes(tag))
-      );
-    }
-
-    const upcoming = visibleEvents
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .slice(0, 5);
+    // Use helper for filtering and sorting
+    const upcoming = filterAndSortEvents(visibleEvents, {
+      startDate: new Date(),
+      tagArray
+    }).slice(0, 5);
 
     res.json(upcoming);
   } catch (err) {
@@ -158,6 +127,7 @@ router.get('/events/upcoming', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 // POST /api/events
 router.post('/events', async (req, res) => {

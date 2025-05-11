@@ -6,10 +6,27 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
+const allowedOrigins = [
+  'http://localhost:2369',
+  'http://localhost:2368', // Ghost Admin
+  'http://localhost:2370'  // example: Vite dev server or another frontend
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed for this origin'));
+    }
+  },
+  optionsSuccessStatus: 200
+};
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors({ origin: 'http://localhost:2368' }));
+app.use(cors(corsOptions));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 

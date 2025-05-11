@@ -180,5 +180,18 @@
     "groupId": "g1",
     "image": "http://localhost:3000/api/images/image-1746766713639-135882260.JPG",
     "thumbnail": "http://localhost:3000/api/images/image-1746766713639-135882260-thumb.JPG"
+  },
+  {
+    "id": "1746923907997",
+    "title": "test file",
+    "description": "New TestGhost Key",
+    "date": "2025-05-16",
+    "tags": [
+      "sonar",
+      "mushy"
+    ],
+    "groupId": "g1",
+    "image": "http://localhost:3000/api/images/image-1746923906195-357489465.png",
+    "thumbnail": "http://localhost:3000/api/images/image-1746923906195-357489465-thumb.png"
   }
 ]

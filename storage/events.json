@@ -193,5 +193,18 @@
     "groupId": "g1",
     "image": "http://localhost:3000/api/images/image-1746923906195-357489465.png",
     "thumbnail": "http://localhost:3000/api/images/image-1746923906195-357489465-thumb.png"
+  },
+  {
+    "id": "1746993969145",
+    "title": "Test Event",
+    "description": "This event is for testing",
+    "date": "2025-05-12",
+    "tags": [
+      "test",
+      "api"
+    ],
+    "groupId": "g1",
+    "image": "",
+    "thumbnail": ""
   }
 ]

@@ -206,5 +206,18 @@
     "groupId": "g1",
     "image": "",
     "thumbnail": ""
+  },
+  {
+    "id": "1747003236123",
+    "title": "Test Event",
+    "description": "This event is for testing",
+    "date": "2025-05-12",
+    "tags": [
+      "test",
+      "api"
+    ],
+    "groupId": "g1",
+    "image": "",
+    "thumbnail": ""
   }
 ]

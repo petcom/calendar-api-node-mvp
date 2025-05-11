@@ -3,19 +3,18 @@ const path = require('path');
 const { loadJson, saveJson } = require('../utils/fileHelpers');
 const { filterAndSortEvents } = require('../utils/eventsHelpers');
 
-
 const router = express.Router();
 
 const EVENTS_FILE = path.join(__dirname, '..', 'storage', 'events.json');
 const USERS_FILE = path.join(__dirname, '..', 'storage', 'users.json');
 const TOKENS_FILE = path.join(__dirname, '..', 'storage', 'tokens.json');
 
-
 // GET /api/events?token=...&tag=optionalTag
 router.get('/events', async (req, res) => {
   try {
     const token = req.query.token;
     const tagParam = req.query.tag;
+    const useAndLogic = req.query.logic === 'and';
 
     if (!token) {
       console.warn('[EVENTS] Missing token');
@@ -59,7 +58,8 @@ router.get('/events', async (req, res) => {
     const filteredEvents = filterAndSortEvents(visibleEvents, {
       startDate,
       endDate,
-      tagArray: tagParam ? [tagParam] : []
+      tagArray: tagParam ? [tagParam] : [],
+      useAndLogic
     });
 
     console.log(`[EVENTS] ${filteredEvents.length} events after filtering and sorting`);
@@ -77,10 +77,11 @@ router.get('/events', async (req, res) => {
 });
 
 // GET /api/events/upcoming?token=...&tag=tag1&tag=tag2
-router.get('/events/upcoming', async (req, res) => {
+router.get('/upcoming-events', async (req, res) => {
   try {
     const token = req.query.token;
     const tagParams = req.query.tag;
+    const useAndLogic = req.query.logic === 'and';
 
     if (!token) {
       console.warn('[EVENTS] Missing token');
@@ -118,7 +119,8 @@ router.get('/events/upcoming', async (req, res) => {
     // Use helper for filtering and sorting
     const upcoming = filterAndSortEvents(visibleEvents, {
       startDate: new Date(),
-      tagArray
+      tagArray,
+      useAndLogic
     }).slice(0, 5);
 
     res.json(upcoming);
@@ -128,62 +130,57 @@ router.get('/events/upcoming', async (req, res) => {
   }
 });
 
-
 // POST /api/events
 router.post('/events', async (req, res) => {
-    try {
-      const { token, title, description, date, tags, image, thumbnail } = req.body;
-  
-      // Validate required fields
-      if (!token || !title || !description || !date) {
-        console.warn('[EVENTS] Missing required fields in POST');
-        return res.status(400).json({ message: 'Missing required fields: token, title, description, date' });
-      }
-  
-      const tokens = await loadJson(TOKENS_FILE);
-      const tokenRecord = tokens.find(t => t.token === token);
-      if (!tokenRecord) {
-        console.warn('[EVENTS] Invalid token:', token);
-        return res.status(403).json({ message: 'Invalid token' });
-      }
-  
-      const users = await loadJson(USERS_FILE);
-      const user = users.find(u => u.username === tokenRecord.username);
-      if (!user || !Array.isArray(user.groups) || user.groups.length === 0) {
-        console.warn('[EVENTS] Unauthorized: user not in group');
-        return res.status(403).json({ message: 'User not authorized to post events' });
-      }
-  
-      const groupId = user.groups[0]; // Use the first group the user is part of
-  
-      // Normalize and validate tags
-      const cleanTags = Array.isArray(tags)
-        ? tags.map(t => typeof t === 'string' ? t.trim().toLowerCase() : null).filter(Boolean)
-        : [];
-  
-      const newEvent = {
-        id: Date.now().toString(),
-        title: title.trim(),
-        description: description.trim(),
-        date: date,
-        tags: cleanTags,
-        groupId,
-        image: image || '',
-        thumbnail: thumbnail || ''
-      };
-  
-      const events = await loadJson(EVENTS_FILE);
-      events.push(newEvent);
-      await saveJson(EVENTS_FILE, events);
-  
-      console.log(`[EVENTS] Created new event by ${user.username}:`, newEvent);
-  
-      res.status(201).json(newEvent);
-    } catch (err) {
-      console.error('[EVENTS] Error creating event:', err);
-      res.status(500).json({ message: 'Internal Server Error' });
+  try {
+    const { token, title, description, date, tags, image, thumbnail } = req.body;
+
+    if (!token || !title || !description || !date) {
+      console.warn('[EVENTS] Missing required fields in POST');
+      return res.status(400).json({ message: 'Missing required fields: token, title, description, date' });
     }
-  });
-  
+
+    const tokens = await loadJson(TOKENS_FILE);
+    const tokenRecord = tokens.find(t => t.token === token);
+    if (!tokenRecord) {
+      console.warn('[EVENTS] Invalid token:', token);
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+
+    const users = await loadJson(USERS_FILE);
+    const user = users.find(u => u.username === tokenRecord.username);
+    if (!user || !Array.isArray(user.groups) || user.groups.length === 0) {
+      console.warn('[EVENTS] Unauthorized: user not in group');
+      return res.status(403).json({ message: 'User not authorized to post events' });
+    }
+
+    const groupId = user.groups[0];
+    const cleanTags = Array.isArray(tags)
+      ? tags.map(t => typeof t === 'string' ? t.trim().toLowerCase() : null).filter(Boolean)
+      : [];
+
+    const newEvent = {
+      id: Date.now().toString(),
+      title: title.trim(),
+      description: description.trim(),
+      date: date,
+      tags: cleanTags,
+      groupId,
+      image: image || '',
+      thumbnail: thumbnail || ''
+    };
+
+    const events = await loadJson(EVENTS_FILE);
+    events.push(newEvent);
+    await saveJson(EVENTS_FILE, events);
+
+    console.log(`[EVENTS] Created new event by ${user.username}:`, newEvent);
+
+    res.status(201).json(newEvent);
+  } catch (err) {
+    console.error('[EVENTS] Error creating event:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 module.exports = router;

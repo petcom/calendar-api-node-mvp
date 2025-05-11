@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const { loadJson, saveJson } = require('../utils/fileHelpers');
+const { filterAndSortEvents } = require('../utils/eventsHelpers');
+
 
 const router = express.Router();
 
@@ -71,8 +73,6 @@ router.get('/events', async (req, res) => {
         Array.isArray(e.tags) &&
         e.tags.map(t => t.toLowerCase()).includes(filterTag)
         );
-  
-        console.log(`[EVENTS] ${visibleEvents.length} events after tag filtering for: "${filterTag}"`);
         }
   
         console.log(`[EVENTS] ${visibleEvents.length} events after tag filtering for: "${filterTag}"`);
@@ -84,6 +84,12 @@ router.get('/events', async (req, res) => {
         console.log('[EVENTS] No matching events found.');
       }
   
+      // ... after tag filtering
+      visibleEvents = visibleEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      console.log(`[EVENTS] ${visibleEvents.length} events after sorting for`);
+      
+
       res.json(visibleEvents);
     } catch (err) {
       console.error('[EVENTS] Unexpected error:', err);
@@ -91,6 +97,67 @@ router.get('/events', async (req, res) => {
     }
   });
 
+
+  // GET /api/events/upcoming?token=...&tag=tag1&tag=tag2
+router.get('/events/upcoming', async (req, res) => {
+  try {
+    const token = req.query.token;
+    const tagParams = req.query.tag;
+
+    if (!token) {
+      console.warn('[EVENTS] Missing token');
+      return res.status(400).send('Missing token');
+    }
+
+    const tokens = await loadJson(TOKENS_FILE);
+    const tokenRecord = tokens.find(t => t.token === token);
+    if (!tokenRecord) {
+      console.warn('[EVENTS] Invalid token:', token);
+      return res.status(403).send('Invalid token');
+    }
+
+    const users = await loadJson(USERS_FILE);
+    const user = users.find(u => u.username === tokenRecord.username);
+    if (!user) {
+      console.warn('[EVENTS] User not found for token:', token);
+      return res.status(403).send('User not found');
+    }
+
+    const allEvents = await loadJson(EVENTS_FILE);
+
+    // Filter by group access
+    let visibleEvents = user.groups.includes('g1')
+      ? allEvents
+      : allEvents.filter(e => user.groups.includes(e.groupId));
+
+    const today = new Date().toISOString().split('T')[0];
+
+    visibleEvents = visibleEvents.filter(e => new Date(e.date) >= new Date(today));
+
+    // Normalize tag parameters to array
+    const tagArray = tagParams
+      ? Array.isArray(tagParams)
+        ? tagParams.map(t => t.toLowerCase())
+        : [tagParams.toLowerCase()]
+      : null;
+
+    if (tagArray && tagArray.length > 0) {
+      visibleEvents = visibleEvents.filter(e =>
+        Array.isArray(e.tags) &&
+        tagArray.every(tag => e.tags.map(t => t.toLowerCase()).includes(tag))
+      );
+    }
+
+    const upcoming = visibleEvents
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 5);
+
+    res.json(upcoming);
+  } catch (err) {
+    console.error('[EVENTS] Unexpected error in /upcoming:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // POST /api/events
 router.post('/events', async (req, res) => {

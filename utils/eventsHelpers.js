@@ -8,29 +8,35 @@ function filterAndSortEvents(events, options = {}) {
 
   return events
     .filter(event => {
-      // Check date range
-      const eventDate = new Date(event.date);
-      if (isNaN(eventDate) || eventDate < startDate || eventDate > endDate) {
+      // Enforce presence of required date fields
+      if (!event.event_date) return false;
+
+      const eventDate = new Date(event.event_date);
+      const displayFromDate = new Date(event.display_from_date || startDate);
+
+      if (
+        isNaN(eventDate) ||
+        isNaN(displayFromDate) ||
+        eventDate < startDate ||
+        eventDate > endDate ||
+        displayFromDate > endDate
+      ) {
         return false;
       }
 
-      // Check tags
+      // Tag filtering
       if (tagArray.length > 0 && Array.isArray(event.tags)) {
         const normalizedEventTags = event.tags.map(t => t.toLowerCase());
         const normalizedFilterTags = tagArray.map(t => t.toLowerCase());
 
-        switch (useAndLogic) {
-          case true:
-            return normalizedFilterTags.every(tag => normalizedEventTags.includes(tag));
-          case false:
-          default:
-            return normalizedFilterTags.some(tag => normalizedEventTags.includes(tag));
-        }
+        return useAndLogic
+          ? normalizedFilterTags.every(tag => normalizedEventTags.includes(tag))
+          : normalizedFilterTags.some(tag => normalizedEventTags.includes(tag));
       }
 
       return true;
     })
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+    .sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
 }
 
 module.exports = { filterAndSortEvents };

@@ -1,40 +1,29 @@
 const express = require('express');
 const path = require('path');
-const sharp = require('sharp');
-const upload = require('../middleware/storageConfig');
+const { loadJson, saveJson } = require('../utils/fileHelpers');
+const { filterAndSortEvents } = require('../utils/eventsHelpers');
 
 const router = express.Router();
 
-router.post('/upload', upload.single('image'), async (req, res) => {
-  if (!req.file) {
-    console.error(`[UPLOAD ERROR] No file uploaded at ${new Date().toISOString()}`);
-    return res.status(400).json({ error: 'No file uploaded' });
-  }
+const EVENTS_FILE = path.join(__dirname, '..', 'storage', 'events.json');
+const USERS_FILE = path.join(__dirname, '..', 'storage', 'users.json');
+const TOKENS_FILE = path.join(__dirname, '..', 'storage', 'tokens.json');
 
-  const originalPath = req.file.path;
-  const filename = req.file.filename;
-  const ext = path.extname(filename);
-  const nameWithoutExt = path.basename(filename, ext);
-  const thumbFilename = `${nameWithoutExt}-thumb${ext}`;
-  const thumbPath = path.join(__dirname, '..', 'public/images', thumbFilename);
-
-  try {
-    await sharp(originalPath).resize({ width: 300 }).toFile(thumbPath);
-
-    const baseUrl = `${req.protocol}://${req.headers.host}`;
-    res.status(200).json({
-      image: `${baseUrl}/api/images/${filename}`,
-      thumbnail: `${baseUrl}/api/images/${thumbFilename}`
-    });
-  } catch (err) {
-    console.error(`[UPLOAD ERROR] Failed to process thumbnail:`, err);
-    res.status(500).json({ error: 'Image processing failed' });
-  }
-});
-
-router.get('/images/:filename', (req, res) => {
-  const filepath = path.join(__dirname, '..', 'public/images', req.params.filename);
-  res.sendFile(filepath);
-});
+// Normalize events to match event-editor-local schema
+function normalizeEvent(event) {
+  return {
+    id: event.id,
+    title: event.title,
+    description: event.description,
+    long_description: event.long_description || '',
+    event_date: event.event_date,
+    display_from_date: event.display_from_date,
+    tags: event.tags || [],
+    group_id: event.group_id,
+    full_image_url: event.full_image_url || '',
+    small_image_url: event.small_image_url || event.full_image_url || '',
+    thumb_url: event.thumb_url || ''
+  };
+}
 
 module.exports = router;

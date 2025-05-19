@@ -3,6 +3,7 @@ const path = require('path');
 const { loadJson, saveJson } = require('../utils/fileHelpers');
 const { filterAndSortEvents } = require('../utils/eventsHelpers');
 
+
 const router = express.Router();
 
 const EVENTS_FILE = path.join(__dirname, '..', 'storage', 'events.json');

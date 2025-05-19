@@ -1,133 +1,68 @@
 [
   {
-    "id": "1745867260487",
-    "title": "Event1",
-    "description": "here's a description",
-    "long_description": "",
-    "event_date": "2025-05-01",
-    "display_from_date": "2025-05-01",
-    "tags": ["adam", "sonar", "etc"],
-    "group_id": "",
+    "id": "20250518-ABCD-001",
+    "title": "Test Event",
+    "description": "Short summary",
+    "long_description": "Full details of the event.",
+    "event_date": "2025-06-01",
+    "display_from_date": "2025-05-15",
+    "tags": [
+      "music",
+      "wellness"
+    ],
+    "group_id": "alpha",
+    "full_image_url": "/Users/adam/gitrepos/event-editor/images/full/20250519-20250518-ABCD-001-1b21d363-fc65-4cd0-92a7-da4377046b42.png",
+    "small_image_url": "/Users/adam/gitrepos/event-editor/images/small/20250519-20250518-ABCD-001-1b21d363-fc65-4cd0-92a7-da4377046b42.png",
+    "thumb_url": "/Users/adam/gitrepos/event-editor/images/thumb/20250519-20250518-ABCD-001-1b21d363-fc65-4cd0-92a7-da4377046b42.png"
+  },
+  {
+    "id": "20250518-ABCD-002",
+    "title": "Test Event 2",
+    "description": "Short summary",
+    "long_description": "Full details of the event.",
+    "event_date": "2025-06-01",
+    "display_from_date": "2025-05-15",
+    "tags": [
+      "music",
+      "wellness"
+    ],
+    "group_id": "alpha",
+    "full_image_url": "/Users/adam/gitrepos/event-editor/images/full/20250518-2-bfec28ad-209f-4b14-a079-607e6eca3d08.png",
+    "small_image_url": "/Users/adam/gitrepos/event-editor/images/small/20250518-2-bfec28ad-209f-4b14-a079-607e6eca3d08.png",
+    "thumb_url": "/Users/adam/gitrepos/event-editor/images/thumb/20250518-2-bfec28ad-209f-4b14-a079-607e6eca3d08.png"
+  },
+  {
+    "id": "20250518-ABCD-003",
+    "title": "Test Event 3",
+    "description": "Short summary",
+    "long_description": "Full details of the event.",
+    "event_date": "2025-06-01",
+    "display_from_date": "2025-05-15",
+    "tags": [
+      "music",
+      "wellness"
+    ],
+    "group_id": "alpha",
+    "full_image_url": "none",
+    "small_image_url": "none",
+    "thumb_url": "none"
+  },
+  {
+    "id": "[object Promise]-001",
+    "title": "test event 11",
+    "description": "test event 11 deac",
+    "long_description": "asdfasdf",
+    "event_date": "2025-05-24",
+    "display_from_date": "2025-05-25",
+    "tags": [
+      "sonar",
+      "me",
+      "you",
+      "beefy"
+    ],
+    "group_id": "45",
     "full_image_url": "",
     "small_image_url": "",
     "thumb_url": ""
-  },
-  {
-    "id": "1745868293471",
-    "title": "test",
-    "description": "testdescription",
-    "long_description": "",
-    "event_date": "2025-05-02",
-    "display_from_date": "2025-05-02",
-    "tags": ["adam", "sonar", "etc"],
-    "group_id": "",
-    "full_image_url": "",
-    "small_image_url": "",
-    "thumb_url": ""
-  },
-  {
-    "id": "1745868733910",
-    "title": "test",
-    "description": "testevent",
-    "long_description": "",
-    "event_date": "2025-05-03",
-    "display_from_date": "2025-05-03",
-    "tags": ["adam", "sonar", "etc"],
-    "group_id": "",
-    "full_image_url": "",
-    "small_image_url": "",
-    "thumb_url": ""
-  },
-  {
-    "id": "1745877595209",
-    "title": "test",
-    "description": "test",
-    "long_description": "",
-    "event_date": "2025-05-08",
-    "display_from_date": "2025-05-08",
-    "tags": ["SONAR"],
-    "group_id": "g1",
-    "full_image_url": "",
-    "small_image_url": "",
-    "thumb_url": ""
-  },
-  {
-    "id": "1746747888483",
-    "title": "SONAR open house",
-    "description": "This is SONAR's open house where we will dance and sign and be merry",
-    "long_description": "",
-    "event_date": "2025-06-04",
-    "display_from_date": "2025-06-04",
-    "tags": ["SONAR"],
-    "group_id": "g1",
-    "full_image_url": "",
-    "small_image_url": "",
-    "thumb_url": "http://localhost:3000/public/images/image-1746760386964-66857675-thumb.JPG"
-  },
-  {
-    "id": "1746747908347",
-    "title": "SONAR sound event",
-    "description": "This is sonar's sound event 2025",
-    "long_description": "",
-    "event_date": "2025-06-12",
-    "display_from_date": "2025-06-12",
-    "tags": ["SONAR"],
-    "group_id": "g1",
-    "full_image_url": "",
-    "small_image_url": "",
-    "thumb_url": "http://localhost:3000/public/images/image-1746760386964-66857675-thumb.JPG"
-  },
-  {
-    "id": "1746752730547",
-    "title": "test",
-    "description": "testytest",
-    "long_description": "",
-    "event_date": "2025-06-06",
-    "display_from_date": "2025-06-06",
-    "tags": ["SONAR", "beefy"],
-    "group_id": "g1",
-    "full_image_url": "/public/images/image-1746752728611-603279391.JPG",
-    "small_image_url": "/public/images/image-1746752728611-603279391.JPG",
-    "thumb_url": "http://localhost:3000/public/images/image-1746760386964-66857675-thumb.JPG"
-  },
-  {
-    "id": "1746754786544",
-    "title": "test",
-    "description": "Steve is great",
-    "long_description": "",
-    "event_date": "2025-06-18",
-    "display_from_date": "2025-06-18",
-    "tags": ["SONAR", "steve"],
-    "group_id": "g1",
-    "full_image_url": "http://localhost:3000/public/images/image-1746754775090-799924294.JPG",
-    "small_image_url": "http://localhost:3000/public/images/image-1746754775090-799924294.JPG",
-    "thumb_url": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG"
-  },
-  {
-    "id": "1746760336752",
-    "title": "asdfasdf",
-    "description": "asdfadsf",
-    "long_description": "",
-    "event_date": "2025-06-11",
-    "display_from_date": "2025-06-11",
-    "tags": ["SONAR", "beefy"],
-    "group_id": "g1",
-    "full_image_url": "http://localhost:3000/public/images/image-1746760334957-871640587.JPG",
-    "small_image_url": "http://localhost:3000/public/images/image-1746760334957-871640587.JPG",
-    "thumb_url": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG"
-  },
-  {
-    "id": "1746760388188",
-    "title": "sdfwerwerwer",
-    "description": "aasdfadsf",
-    "long_description": "",
-    "event_date": "2025-06-24",
-    "display_from_date": "2025-06-24",
-    "tags": ["SONAR", "steve"],
-    "group_id": "g1",
-    "full_image_url": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG",
-    "small_image_url": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG",
-    "thumb_url": "http://localhost:3000/public/images/image-1746760386964-66857675.JPG"
   }
-  // …Continue same for remaining items
 ]

@@ -1,68 +1,105 @@
 [
-  {
-    "id": "20250518-ABCD-001",
-    "title": "Test Event",
-    "description": "Short summary",
-    "long_description": "Full details of the event.",
-    "event_date": "2025-06-01",
-    "display_from_date": "2025-05-15",
-    "tags": [
-      "music",
-      "wellness"
-    ],
-    "group_id": "alpha",
-    "full_image_url": "/Users/adam/gitrepos/event-editor/images/full/20250519-20250518-ABCD-001-1b21d363-fc65-4cd0-92a7-da4377046b42.png",
-    "small_image_url": "/Users/adam/gitrepos/event-editor/images/small/20250519-20250518-ABCD-001-1b21d363-fc65-4cd0-92a7-da4377046b42.png",
-    "thumb_url": "/Users/adam/gitrepos/event-editor/images/thumb/20250519-20250518-ABCD-001-1b21d363-fc65-4cd0-92a7-da4377046b42.png"
-  },
-  {
-    "id": "20250518-ABCD-002",
-    "title": "Test Event 2",
-    "description": "Short summary",
-    "long_description": "Full details of the event.",
-    "event_date": "2025-06-01",
-    "display_from_date": "2025-05-15",
-    "tags": [
-      "music",
-      "wellness"
-    ],
-    "group_id": "alpha",
-    "full_image_url": "/Users/adam/gitrepos/event-editor/images/full/20250518-2-bfec28ad-209f-4b14-a079-607e6eca3d08.png",
-    "small_image_url": "/Users/adam/gitrepos/event-editor/images/small/20250518-2-bfec28ad-209f-4b14-a079-607e6eca3d08.png",
-    "thumb_url": "/Users/adam/gitrepos/event-editor/images/thumb/20250518-2-bfec28ad-209f-4b14-a079-607e6eca3d08.png"
-  },
-  {
-    "id": "20250518-ABCD-003",
-    "title": "Test Event 3",
-    "description": "Short summary",
-    "long_description": "Full details of the event.",
-    "event_date": "2025-06-01",
-    "display_from_date": "2025-05-15",
-    "tags": [
-      "music",
-      "wellness"
-    ],
-    "group_id": "alpha",
-    "full_image_url": "none",
-    "small_image_url": "none",
-    "thumb_url": "none"
-  },
-  {
-    "id": "[object Promise]-001",
-    "title": "test event 11",
-    "description": "test event 11 deac",
-    "long_description": "asdfasdf",
-    "event_date": "2025-05-24",
-    "display_from_date": "2025-05-25",
+{
+    "id": "20250519-F325-001",
+    "title": "This is a new one",
+    "description": "this is new",
+    "long_description": "this is more new",
+    "event_date": "2025-05-20",
+    "display_from_date": "2025-05-19",
     "tags": [
       "sonar",
-      "me",
-      "you",
       "beefy"
     ],
-    "group_id": "45",
-    "full_image_url": "",
-    "small_image_url": "",
-    "thumb_url": ""
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-001-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-001-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-001-thumb.png"
+  },
+  {
+    "id": "20250519-F325-002",
+    "title": "New Title",
+    "description": "new Description",
+    "long_description": "here's a longer description",
+    "event_date": "2025-05-23",
+    "display_from_date": "2025-05-20",
+    "tags": [
+      "sonar",
+      "beefy",
+      "bigone"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-002-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-002-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-002-thumb.png"
+  },
+  {
+    "id": "20250519-F325-003",
+    "title": "New event Trois",
+    "description": "New Event Here People",
+    "long_description": "Here's a new event",
+    "event_date": "2025-05-23",
+    "display_from_date": "2025-05-19",
+    "tags": [
+      "sonar",
+      "test",
+      "me",
+      "you"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-003-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-003-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-003-thumb.png"
+  },
+  {
+    "id": "20250519-F325-004",
+    "title": "New Event 4",
+    "description": "New Event",
+    "long_description": "New Event here",
+    "event_date": "2025-05-21",
+    "display_from_date": "2025-05-19",
+    "tags": [
+      "sonar",
+      "this",
+      "that"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-004-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-004-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-004-thumb.png"
+  },
+  {
+    "id": "20250519-F325-005",
+    "title": "New Event 5",
+    "description": "Test Event",
+    "long_description": "Test Event Description",
+    "event_date": "2025-05-24",
+    "display_from_date": "2025-05-20",
+    "tags": [
+      "sonar",
+      "this",
+      "that"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-005-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-005-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-005-thumb.png"
+  },
+  {
+    "id": "20250520-F325-001",
+    "title": "test event",
+    "description": "dest tescription",
+    "long_description": "heres a long one",
+    "event_date": "2025-05-24",
+    "display_from_date": "2025-05-20",
+    "tags": [
+      "sonar",
+      "test",
+      "me",
+      "you"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-thumb.png"
   }
 ]

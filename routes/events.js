@@ -25,7 +25,7 @@ function normalizeEvent(event) {
     group_id: event.group_id,
     full_image_url: event.full_image_url || '',
     small_image_url: event.small_image_url || event.full_image_url || '',
-    thumb_url: event.thumb_url || ''
+    thumb_image_url: event.thumb_image_url || event.thumb_url || ''
   };
 }
 
@@ -192,7 +192,7 @@ router.post('/events', async (req, res) => {
     const {
       token, title, description, long_description,
       event_date, display_from_date, tags,
-      full_image_url, small_image_url, thumb_url
+      full_image_url, small_image_url, thumb_image_url, thumb_url
     } = req.body;
 
     if (!token || !title || !description || !event_date) {
@@ -230,7 +230,7 @@ router.post('/events', async (req, res) => {
       group_id,
       full_image_url: full_image_url || '',
       small_image_url: small_image_url || full_image_url || '',
-      thumb_url: thumb_url || ''
+      thumb_image_url: thumb_image_url || thumb_url || ''
     };
 
     const events = await loadJson(EVENTS_FILE);

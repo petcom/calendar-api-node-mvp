@@ -4,8 +4,8 @@ const axios = require('axios');
 const BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000/api';
 
 const testCredentials = {
-  username: 'testuser',     // Replace with valid username
-  password: 'testpassword'  // Replace with valid password
+  username: 'adam3',     // Replace with valid username
+  password: 'adam3'  // Replace with valid password
 };
 
 async function testLogin() {

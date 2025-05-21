@@ -2,8 +2,11 @@
 const { verifyToken } = require('../utils/jwtUtils');
 
 function authenticateJWT(req, res, next) {
+  
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
+
+  console.log('[AUTH] Received token:', token);
 
   if (!token) return res.status(401).json({ message: 'Missing token' });
 

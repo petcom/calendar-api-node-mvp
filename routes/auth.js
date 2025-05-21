@@ -8,7 +8,8 @@ const { loadJson } = require('../utils/fileHelpers');
 const USERS_FILE = path.join(__dirname, '..', 'storage', 'users.json');
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
+router.post('/jwtlogin', async (req, res) => {
+  console.log('[AUTH] Login attempt:', req.body);
   const { username, password } = req.body;
 
   try {
@@ -21,7 +22,8 @@ router.post('/login', async (req, res) => {
     }
 
     const token = signToken({ username });
-    console.log(`[AUTH] User ${username} logged in`);
+    console.warn(`[AUTH] User ${username} logged in with token: ${token}`);
+
     res.json({ token });
   } catch (err) {
     console.error('[AUTH] Error during login:', err);

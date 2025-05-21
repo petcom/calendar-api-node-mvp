@@ -1,5 +1,5 @@
 [
-{
+  {
     "id": "20250519-F325-001",
     "title": "This is a new one",
     "description": "this is new",
@@ -101,5 +101,23 @@
     "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-full.png",
     "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-small.png",
     "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-thumb.png"
+  },
+  {
+    "id": "20250521-F325-001",
+    "title": "Test Event 3",
+    "description": "New event 3",
+    "long_description": "New Test Event 3",
+    "event_date": "2025-05-21",
+    "display_from_date": "2025-05-20",
+    "tags": [
+      "sonar",
+      "test",
+      "you",
+      "me"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-thumb.png"
   }
 ]

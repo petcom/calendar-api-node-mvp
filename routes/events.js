@@ -3,7 +3,6 @@ const path = require('path');
 const { loadJson, saveJson } = require('../utils/fileHelpers');
 const { filterAndSortEvents } = require('../utils/eventsHelpers');
 
-
 const router = express.Router();
 
 const EVENTS_FILE = path.join(__dirname, '..', 'storage', 'events.json');
@@ -31,8 +30,21 @@ function normalizeEvent(event) {
 
 const authenticateJWT = require('../middleware/auth');
 
-// POST /api/events/merge (now protected by JWT)
+// Helper to extract token from Authorization header
+async function getUserFromAuthHeader(req) {
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token) return null;
+  const tokens = await loadJson(TOKENS_FILE);
+  const tokenRecord = tokens.find(t => t.token === token);
+  if (!tokenRecord) return null;
+  const users = await loadJson(USERS_FILE);
+  return users.find(u => u.username === tokenRecord.username);
+}
+
+// POST /api/events/merge (still protected by JWT)
 router.post('/events/merge', authenticateJWT, async (req, res) => {
+  
   try {
     const { events: clientEvents } = req.body;
 
@@ -73,32 +85,17 @@ router.post('/events/merge', authenticateJWT, async (req, res) => {
   }
 });
 
-
-// GET /api/events?token=...&tag=optionalTag
+// GET /api/events?tag=optionalTag
 router.get('/events', async (req, res) => {
   try {
-    const token = req.query.token;
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      console.warn('[EVENTS] Missing or invalid token');
+      return res.status(401).send('Missing or invalid token');
+    }
+
     const tagParam = req.query.tag;
     const useAndLogic = req.query.logic === 'and';
-
-    if (!token) {
-      console.warn('[EVENTS] Missing token');
-      return res.status(400).send('Missing token');
-    }
-
-    const tokens = await loadJson(TOKENS_FILE);
-    const tokenRecord = tokens.find(t => t.token === token);
-    if (!tokenRecord) {
-      console.warn('[EVENTS] Invalid token:', token);
-      return res.status(403).send('Invalid token');
-    }
-
-    const users = await loadJson(USERS_FILE);
-    const user = users.find(u => u.username === tokenRecord.username);
-    if (!user) {
-      console.warn('[EVENTS] User not found for token:', token);
-      return res.status(403).send('User not found');
-    }
 
     console.log(`[EVENTS] ${user.username} requested events`);
 
@@ -137,31 +134,17 @@ router.get('/events', async (req, res) => {
   }
 });
 
-// GET /api/events/upcoming?token=...&tag=tag1&tag=tag2
+// GET /api/events/upcoming?tag=tag1&tag=tag2
 router.get('/upcoming-events', async (req, res) => {
   try {
-    const token = req.query.token;
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      console.warn('[EVENTS] Missing or invalid token');
+      return res.status(401).send('Missing or invalid token');
+    }
+
     const tagParams = req.query.tag;
     const useAndLogic = req.query.logic === 'and';
-
-    if (!token) {
-      console.warn('[EVENTS] Missing token');
-      return res.status(400).send('Missing token');
-    }
-
-    const tokens = await loadJson(TOKENS_FILE);
-    const tokenRecord = tokens.find(t => t.token === token);
-    if (!tokenRecord) {
-      console.warn('[EVENTS] Invalid token:', token);
-      return res.status(403).send('Invalid token');
-    }
-
-    const users = await loadJson(USERS_FILE);
-    const user = users.find(u => u.username === tokenRecord.username);
-    if (!user) {
-      console.warn('[EVENTS] User not found for token:', token);
-      return res.status(403).send('User not found');
-    }
 
     const allEvents = await loadJson(EVENTS_FILE);
 
@@ -192,28 +175,20 @@ router.get('/upcoming-events', async (req, res) => {
 router.post('/events', async (req, res) => {
   try {
     const {
-      token, title, description, long_description,
+      title, description, long_description,
       event_date, display_from_date, tags,
       full_image_url, small_image_url, thumb_image_url, thumb_url
     } = req.body;
 
-    if (!token || !title || !description || !event_date) {
-      console.warn('[EVENTS] Missing required fields in POST');
-      return res.status(400).json({ message: 'Missing required fields: token, title, description, event_date' });
-    }
-
-    const tokens = await loadJson(TOKENS_FILE);
-    const tokenRecord = tokens.find(t => t.token === token);
-    if (!tokenRecord) {
-      console.warn('[EVENTS] Invalid token:', token);
-      return res.status(403).json({ message: 'Invalid token' });
-    }
-
-    const users = await loadJson(USERS_FILE);
-    const user = users.find(u => u.username === tokenRecord.username);
+    const user = await getUserFromAuthHeader(req);
     if (!user || !Array.isArray(user.groups) || user.groups.length === 0) {
-      console.warn('[EVENTS] Unauthorized: user not in group');
+      console.warn('[EVENTS] Unauthorized: user not in group or missing/invalid token');
       return res.status(403).json({ message: 'User not authorized to post events' });
+    }
+
+    if (!title || !description || !event_date) {
+      console.warn('[EVENTS] Missing required fields in POST');
+      return res.status(400).json({ message: 'Missing required fields: title, description, event_date' });
     }
 
     const group_id = user.groups[0];

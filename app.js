@@ -1,3 +1,6 @@
+
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -36,6 +39,7 @@ app.use('/api', require('./routes/upload'));
 app.use('/api', require('./routes/events'));
 app.use('/api', require('./routes/users'));
 app.use('/api', require('./routes/groups'));
+app.use('/api', require('./routes/auth'));
 
 // Root redirect
 app.get('/', (req, res) => {

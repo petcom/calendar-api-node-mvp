@@ -18,5 +18,10 @@
     "groups": [
       "g1745877047967"
     ]
+  },
+    {
+    "username": "admin",
+    "password": "$2b$10$VHIN63WtdWYjAIkIrO9D7e0nKqSpzI2rfCKXZ5gbc8roJcD3XmpgK",
+    "groups": []
   }
 ]

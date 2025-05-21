@@ -9,7 +9,8 @@ const PORT = 3000;
 const allowedOrigins = [
   'http://localhost:2369',
   'http://localhost:2368', // Ghost Admin
-  'http://localhost:2370'  // example: Vite dev server or another frontend
+  'http://localhost:2370',
+  'http://localhost:3000'  // example: Vite dev server or another frontend
 ];
 
 const corsOptions = {

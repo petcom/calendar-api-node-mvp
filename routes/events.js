@@ -29,23 +29,26 @@ function normalizeEvent(event) {
   };
 }
 
-// POST /api/events/merge
-router.post('/events/merge', async (req, res) => {
+const authenticateJWT = require('../middleware/auth');
+
+// POST /api/events/merge (now protected by JWT)
+router.post('/events/merge', authenticateJWT, async (req, res) => {
   try {
-    const { token, events: clientEvents } = req.body;
+    const { events: clientEvents } = req.body;
 
     if (mergeLock) {
       return res.status(423).json({ message: 'Merge is currently locked by another client.' });
     }
 
-    if (!token || !Array.isArray(clientEvents)) {
-      return res.status(400).json({ message: 'Invalid request: token and events are required.' });
+    if (!Array.isArray(clientEvents)) {
+      return res.status(400).json({ message: 'Invalid request: events are required.' });
     }
 
-    const tokens = await loadJson(TOKENS_FILE);
-    const tokenRecord = tokens.find(t => t.token === token);
-    if (!tokenRecord) {
-      return res.status(403).json({ message: 'Invalid token' });
+    const username = req.user.username;
+    const users = await loadJson(USERS_FILE);
+    const user = users.find(u => u.username === username);
+    if (!user) {
+      return res.status(403).json({ message: 'User not found' });
     }
 
     mergeLock = true;
@@ -54,16 +57,14 @@ router.post('/events/merge', async (req, res) => {
     const clientEventIds = clientEvents.map(e => e.id);
 
     const merged = [
-      // Keep only server events not in client (unchanged ones)
       ...serverEvents.filter(se => !clientEventIds.includes(se.id)),
-      // Add all client events (new + changed)
       ...clientEvents.map(normalizeEvent)
     ];
 
     await saveJson(EVENTS_FILE, merged);
     mergeLock = false;
 
-    console.log(`[MERGE] ${clientEvents.length} events merged by ${tokenRecord.username}`);
+    console.log(`[MERGE] ${clientEvents.length} events merged by ${username}`);
     res.status(200).json({ message: 'Merge successful', total: merged.length });
   } catch (err) {
     mergeLock = false;
@@ -71,6 +72,7 @@ router.post('/events/merge', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 // GET /api/events?token=...&tag=optionalTag
 router.get('/events', async (req, res) => {

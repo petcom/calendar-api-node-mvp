@@ -31,16 +31,40 @@ function normalizeEvent(event) {
 const authenticateJWT = require('../middleware/auth');
 
 // Helper to extract token from Authorization header
+const jwt = require('jsonwebtoken');
+const SECRET = process.env.JWT_SECRET;
+
+if (!SECRET) {
+  console.error('[AUTH] JWT_SECRET is not defined. Add it to your .env file');
+  process.exit(1);
+}
+
 async function getUserFromAuthHeader(req) {
   const authHeader = req.headers['authorization'] || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  if (!token) return null;
-  const tokens = await loadJson(TOKENS_FILE);
-  const tokenRecord = tokens.find(t => t.token === token);
-  if (!tokenRecord) return null;
-  const users = await loadJson(USERS_FILE);
-  return users.find(u => u.username === tokenRecord.username);
+
+  if (!token) {
+    console.warn('[AUTH DEBUG] No token found in Authorization header');
+    return null;
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET);
+    console.log('[AUTH DEBUG] Decoded token:', decoded);
+
+    const users = await loadJson(USERS_FILE);
+    const user = users.find(u => u.username === decoded.username);
+    if (!user) {
+      console.warn('[AUTH DEBUG] User not found:', decoded.username);
+    }
+    return user;
+  } catch (err) {
+    console.error('[AUTH DEBUG] JWT verification failed:', err.message);
+    return null;
+  }
 }
+
+
 
 // POST /api/events/merge (still protected by JWT)
 router.post('/events/merge', authenticateJWT, async (req, res) => {
@@ -85,7 +109,7 @@ router.post('/events/merge', authenticateJWT, async (req, res) => {
   }
 });
 
-// GET /api/events?tag=optionalTag
+// GET for backwards compatibility or URL query testing
 router.get('/events', async (req, res) => {
   try {
     const user = await getUserFromAuthHeader(req);
@@ -96,22 +120,16 @@ router.get('/events', async (req, res) => {
 
     const tagParam = req.query.tag;
     const useAndLogic = req.query.logic === 'and';
+    const now = new Date();
+    const startDate = req.query.startDate ? new Date(req.query.startDate) : now;
+    const endDate = req.query.endDate ? new Date(req.query.endDate) : new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    console.log(`[EVENTS] ${user.username} requested events`);
+    console.log(`[EVENTS:GET] User ${user.username}, Tags: ${tagParam}, Dates: ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
     const allEvents = await loadJson(EVENTS_FILE);
-    console.log(`[EVENTS] Loaded ${allEvents.length} total events`);
-
     const visibleEvents = user.groups.includes('g1')
       ? allEvents
       : allEvents.filter(e => user.groups.includes(e.group_id));
-
-    const now = new Date();
-    const defaultEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-    const startDate = req.query.startDate ? new Date(req.query.startDate) : now;
-    const endDate = req.query.endDate ? new Date(req.query.endDate) : defaultEnd;
-
-    console.log(`[EVENTS] Filtering from ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
     const filteredEvents = filterAndSortEvents(visibleEvents, {
       startDate,
@@ -120,22 +138,56 @@ router.get('/events', async (req, res) => {
       useAndLogic
     });
 
-    console.log(`[EVENTS] ${filteredEvents.length} events after filtering and sorting`);
-    if (filteredEvents.length > 0) {
-      console.log(`[EVENTS] Returning sample event:`, filteredEvents[0]);
-    } else {
-      console.log('[EVENTS] No matching events found.');
-    }
-
     res.json(filteredEvents.map(normalizeEvent));
   } catch (err) {
-    console.error('[EVENTS] Unexpected error:', err);
+    console.error('[EVENTS:GET] Error:', err);
     res.status(500).send('Internal Server Error');
   }
 });
 
+
+// POST for secure frontend with bearer + body
+router.post('/events', async (req, res) => {
+  try {
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      console.warn('[EVENTS] Missing or invalid token');
+      return res.status(401).send('Missing or invalid token');
+    }
+
+    const { tags = [], tag_logic = 'or', startDate: startStr, endDate: endStr } = req.body;
+    const useAndLogic = tag_logic === 'and';
+
+    const now = new Date();
+    const startDate = startStr ? new Date(startStr) : now;
+    const endDate = endStr ? new Date(endStr) : new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+    console.log(`[EVENTS:POST] User ${user.username}, Tags: ${tags}, Dates: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+
+    const allEvents = await loadJson(EVENTS_FILE);
+    const visibleEvents = user.groups.includes('g1')
+      ? allEvents
+      : allEvents.filter(e => user.groups.includes(e.group_id));
+
+    const filteredEvents = filterAndSortEvents(visibleEvents, {
+      startDate,
+      endDate,
+      tagArray: tags,
+      useAndLogic
+    });
+
+    res.json(filteredEvents.map(normalizeEvent));
+  } catch (err) {
+    console.error('[EVENTS:POST] Error:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 // GET /api/events/upcoming?tag=tag1&tag=tag2
 router.get('/upcoming-events', async (req, res) => {
+  console.log('[AUTH DEBUG] Incoming Authorization header:', req.headers.authorization);
+  
   try {
     const user = await getUserFromAuthHeader(req);
     if (!user) {
@@ -167,6 +219,37 @@ router.get('/upcoming-events', async (req, res) => {
     res.json(upcoming.map(normalizeEvent));
   } catch (err) {
     console.error('[EVENTS] Unexpected error in /upcoming:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// POST /api/events/upcoming-events
+router.post('/upcoming-events', async (req, res) => {
+  try {
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      console.warn('[EVENTS] Missing or invalid token');
+      return res.status(401).send('Missing or invalid token');
+    }
+
+    const { tags = [], tag_logic = 'or' } = req.body;
+    const useAndLogic = tag_logic === 'and';
+
+    const allEvents = await loadJson(EVENTS_FILE);
+
+    const visibleEvents = user.groups.includes('g1')
+      ? allEvents
+      : allEvents.filter(e => user.groups.includes(e.group_id));
+
+    const upcoming = filterAndSortEvents(visibleEvents, {
+      startDate: new Date(),
+      tagArray: tags,
+      useAndLogic
+    }).slice(0, 5);
+
+    res.json(upcoming.map(normalizeEvent));
+  } catch (err) {
+    console.error('[EVENTS] Unexpected error in post/upcoming-events:', err);
     res.status(500).send('Internal Server Error');
   }
 });

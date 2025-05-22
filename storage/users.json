@@ -2,11 +2,13 @@
   {
     "username": "adam2",
     "password": "$2b$10$ZoR1R8LmVohgRUFmpdr7uu0tdVBZkAMGGMGBCODQa3lg2h7CjUCa2",
+    "token_expiry": "2h",
     "groups": []
   },
   {
     "username": "adam3",
     "password": "$2b$10$BhJgUN2x5VCTgnwvHhbW3uLWzGeDAxZJ6LX74Bnd8JuuD05Aqb12q",
+    "token_expiry": "2h",
     "groups": [
       "g1",
       "g1745877047967"
@@ -15,13 +17,18 @@
   {
     "username": "adam4",
     "password": "$2b$10$BJvXrclZ4V8IM5e64GOXvOGzLsCzu4ChSPbTZ2mRXSR7lwFb.Ykx.",
+    "token_expiry": "5m",
     "groups": [
-      "g1745877047967"
+      "g1"
     ]
   },
-    {
+  {
     "username": "admin",
-    "password": "$2b$10$VHIN63WtdWYjAIkIrO9D7e0nKqSpzI2rfCKXZ5gbc8roJcD3XmpgK",
-    "groups": []
+    "password": "$2b$10$qD/Xl0F6rjb3u/FXyOVZ9ex7ChoyaYaNoSIDTmcsq6fs9DVY3U2Ga",
+    "token_expiry": "2h",
+    "notes": "ThisIsAPassword!",
+    "groups": [
+      "g1"
+    ]
   }
 ]

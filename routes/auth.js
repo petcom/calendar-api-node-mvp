@@ -21,8 +21,9 @@ router.post('/jwtlogin', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = signToken({ username });
-    console.warn(`[AUTH] User ${username} logged in with token: ${token}`);
+    const expiresIn = user.token_expiry || '10m'; // fallback to 10 minutes
+    const token = signToken({ username }, expiresIn);
+    console.warn(`[AUTH] User ${username} logged in with token (exp: ${expiresIn})`);
 
     res.json({ token });
   } catch (err) {

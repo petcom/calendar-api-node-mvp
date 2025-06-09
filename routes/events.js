@@ -3,7 +3,6 @@ const path = require('path');
 const { loadJson, saveJson } = require('../utils/fileHelpers');
 const { filterAndSortEvents } = require('../utils/eventsHelpers');
 
-
 const router = express.Router();
 
 const EVENTS_FILE = path.join(__dirname, '..', 'storage', 'events.json');
@@ -29,23 +28,63 @@ function normalizeEvent(event) {
   };
 }
 
-// POST /api/events/merge
-router.post('/events/merge', async (req, res) => {
+const authenticateJWT = require('../middleware/auth');
+
+// Helper to extract token from Authorization header
+const jwt = require('jsonwebtoken');
+const SECRET = process.env.JWT_SECRET;
+
+if (!SECRET) {
+  console.error('[AUTH] JWT_SECRET is not defined. Add it to your .env file');
+  process.exit(1);
+}
+
+async function getUserFromAuthHeader(req) {
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  if (!token) {
+    console.warn('[AUTH DEBUG] No token found in Authorization header');
+    return null;
+  }
+
   try {
-    const { token, events: clientEvents } = req.body;
+    const decoded = jwt.verify(token, SECRET);
+    console.log('[AUTH DEBUG] Decoded token:', decoded);
+
+    const users = await loadJson(USERS_FILE);
+    const user = users.find(u => u.username === decoded.username);
+    if (!user) {
+      console.warn('[AUTH DEBUG] User not found:', decoded.username);
+    }
+    return user;
+  } catch (err) {
+    console.error('[AUTH DEBUG] JWT verification failed:', err.message);
+    return null;
+  }
+}
+
+
+
+// POST /api/events/merge (still protected by JWT)
+router.post('/events/merge', authenticateJWT, async (req, res) => {
+  
+  try {
+    const { events: clientEvents } = req.body;
 
     if (mergeLock) {
       return res.status(423).json({ message: 'Merge is currently locked by another client.' });
     }
 
-    if (!token || !Array.isArray(clientEvents)) {
-      return res.status(400).json({ message: 'Invalid request: token and events are required.' });
+    if (!Array.isArray(clientEvents)) {
+      return res.status(400).json({ message: 'Invalid request: events are required.' });
     }
 
-    const tokens = await loadJson(TOKENS_FILE);
-    const tokenRecord = tokens.find(t => t.token === token);
-    if (!tokenRecord) {
-      return res.status(403).json({ message: 'Invalid token' });
+    const username = req.user.username;
+    const users = await loadJson(USERS_FILE);
+    const user = users.find(u => u.username === username);
+    if (!user) {
+      return res.status(403).json({ message: 'User not found' });
     }
 
     mergeLock = true;
@@ -54,16 +93,14 @@ router.post('/events/merge', async (req, res) => {
     const clientEventIds = clientEvents.map(e => e.id);
 
     const merged = [
-      // Keep only server events not in client (unchanged ones)
       ...serverEvents.filter(se => !clientEventIds.includes(se.id)),
-      // Add all client events (new + changed)
       ...clientEvents.map(normalizeEvent)
     ];
 
     await saveJson(EVENTS_FILE, merged);
     mergeLock = false;
 
-    console.log(`[MERGE] ${clientEvents.length} events merged by ${tokenRecord.username}`);
+    console.log(`[MERGE] ${clientEvents.length} events merged by ${username}`);
     res.status(200).json({ message: 'Merge successful', total: merged.length });
   } catch (err) {
     mergeLock = false;
@@ -72,47 +109,27 @@ router.post('/events/merge', async (req, res) => {
   }
 });
 
-// GET /api/events?token=...&tag=optionalTag
+// GET for backwards compatibility or URL query testing
 router.get('/events', async (req, res) => {
   try {
-    const token = req.query.token;
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      console.warn('[EVENTS] Missing or invalid token');
+      return res.status(401).send('Missing or invalid token');
+    }
+
     const tagParam = req.query.tag;
     const useAndLogic = req.query.logic === 'and';
+    const now = new Date();
+    const startDate = req.query.startDate ? new Date(req.query.startDate) : now;
+    const endDate = req.query.endDate ? new Date(req.query.endDate) : new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    if (!token) {
-      console.warn('[EVENTS] Missing token');
-      return res.status(400).send('Missing token');
-    }
-
-    const tokens = await loadJson(TOKENS_FILE);
-    const tokenRecord = tokens.find(t => t.token === token);
-    if (!tokenRecord) {
-      console.warn('[EVENTS] Invalid token:', token);
-      return res.status(403).send('Invalid token');
-    }
-
-    const users = await loadJson(USERS_FILE);
-    const user = users.find(u => u.username === tokenRecord.username);
-    if (!user) {
-      console.warn('[EVENTS] User not found for token:', token);
-      return res.status(403).send('User not found');
-    }
-
-    console.log(`[EVENTS] ${user.username} requested events`);
+    console.log(`[EVENTS:GET] User ${user.username}, Tags: ${tagParam}, Dates: ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
     const allEvents = await loadJson(EVENTS_FILE);
-    console.log(`[EVENTS] Loaded ${allEvents.length} total events`);
-
     const visibleEvents = user.groups.includes('g1')
       ? allEvents
       : allEvents.filter(e => user.groups.includes(e.group_id));
-
-    const now = new Date();
-    const defaultEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-    const startDate = req.query.startDate ? new Date(req.query.startDate) : now;
-    const endDate = req.query.endDate ? new Date(req.query.endDate) : defaultEnd;
-
-    console.log(`[EVENTS] Filtering from ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
     const filteredEvents = filterAndSortEvents(visibleEvents, {
       startDate,
@@ -121,45 +138,65 @@ router.get('/events', async (req, res) => {
       useAndLogic
     });
 
-    console.log(`[EVENTS] ${filteredEvents.length} events after filtering and sorting`);
-    if (filteredEvents.length > 0) {
-      console.log(`[EVENTS] Returning sample event:`, filteredEvents[0]);
-    } else {
-      console.log('[EVENTS] No matching events found.');
-    }
-
     res.json(filteredEvents.map(normalizeEvent));
   } catch (err) {
-    console.error('[EVENTS] Unexpected error:', err);
+    console.error('[EVENTS:GET] Error:', err);
     res.status(500).send('Internal Server Error');
   }
 });
 
-// GET /api/events/upcoming?token=...&tag=tag1&tag=tag2
-router.get('/upcoming-events', async (req, res) => {
+
+// POST for secure frontend with bearer + body
+router.post('/events', async (req, res) => {
   try {
-    const token = req.query.token;
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      console.warn('[EVENTS] Missing or invalid token');
+      return res.status(401).send('Missing or invalid token');
+    }
+
+    const { tags = [], tag_logic = 'or', startDate: startStr, endDate: endStr } = req.body;
+    const useAndLogic = tag_logic === 'and';
+
+    const now = new Date();
+    const startDate = startStr ? new Date(startStr) : now;
+    const endDate = endStr ? new Date(endStr) : new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+    console.log(`[EVENTS:POST] User ${user.username}, Tags: ${tags}, Dates: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+
+    const allEvents = await loadJson(EVENTS_FILE);
+    const visibleEvents = user.groups.includes('g1')
+      ? allEvents
+      : allEvents.filter(e => user.groups.includes(e.group_id));
+
+    const filteredEvents = filterAndSortEvents(visibleEvents, {
+      startDate,
+      endDate,
+      tagArray: tags,
+      useAndLogic
+    });
+
+    res.json(filteredEvents.map(normalizeEvent));
+  } catch (err) {
+    console.error('[EVENTS:POST] Error:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
+// GET /api/events/upcoming?tag=tag1&tag=tag2
+router.get('/upcoming-events', async (req, res) => {
+  console.log('[AUTH DEBUG] Incoming Authorization header:', req.headers.authorization);
+  
+  try {
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      console.warn('[EVENTS] Missing or invalid token');
+      return res.status(401).send('Missing or invalid token');
+    }
+
     const tagParams = req.query.tag;
     const useAndLogic = req.query.logic === 'and';
-
-    if (!token) {
-      console.warn('[EVENTS] Missing token');
-      return res.status(400).send('Missing token');
-    }
-
-    const tokens = await loadJson(TOKENS_FILE);
-    const tokenRecord = tokens.find(t => t.token === token);
-    if (!tokenRecord) {
-      console.warn('[EVENTS] Invalid token:', token);
-      return res.status(403).send('Invalid token');
-    }
-
-    const users = await loadJson(USERS_FILE);
-    const user = users.find(u => u.username === tokenRecord.username);
-    if (!user) {
-      console.warn('[EVENTS] User not found for token:', token);
-      return res.status(403).send('User not found');
-    }
 
     const allEvents = await loadJson(EVENTS_FILE);
 
@@ -186,32 +223,55 @@ router.get('/upcoming-events', async (req, res) => {
   }
 });
 
+// POST /api/events/upcoming-events
+router.post('/upcoming-events', async (req, res) => {
+  try {
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      console.warn('[EVENTS] Missing or invalid token');
+      return res.status(401).send('Missing or invalid token');
+    }
+
+    const { tags = [], tag_logic = 'or' } = req.body;
+    const useAndLogic = tag_logic === 'and';
+
+    const allEvents = await loadJson(EVENTS_FILE);
+
+    const visibleEvents = user.groups.includes('g1')
+      ? allEvents
+      : allEvents.filter(e => user.groups.includes(e.group_id));
+
+    const upcoming = filterAndSortEvents(visibleEvents, {
+      startDate: new Date(),
+      tagArray: tags,
+      useAndLogic
+    }).slice(0, 5);
+
+    res.json(upcoming.map(normalizeEvent));
+  } catch (err) {
+    console.error('[EVENTS] Unexpected error in post/upcoming-events:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // POST /api/events
 router.post('/events', async (req, res) => {
   try {
     const {
-      token, title, description, long_description,
+      title, description, long_description,
       event_date, display_from_date, tags,
       full_image_url, small_image_url, thumb_image_url, thumb_url
     } = req.body;
 
-    if (!token || !title || !description || !event_date) {
-      console.warn('[EVENTS] Missing required fields in POST');
-      return res.status(400).json({ message: 'Missing required fields: token, title, description, event_date' });
-    }
-
-    const tokens = await loadJson(TOKENS_FILE);
-    const tokenRecord = tokens.find(t => t.token === token);
-    if (!tokenRecord) {
-      console.warn('[EVENTS] Invalid token:', token);
-      return res.status(403).json({ message: 'Invalid token' });
-    }
-
-    const users = await loadJson(USERS_FILE);
-    const user = users.find(u => u.username === tokenRecord.username);
+    const user = await getUserFromAuthHeader(req);
     if (!user || !Array.isArray(user.groups) || user.groups.length === 0) {
-      console.warn('[EVENTS] Unauthorized: user not in group');
+      console.warn('[EVENTS] Unauthorized: user not in group or missing/invalid token');
       return res.status(403).json({ message: 'User not authorized to post events' });
+    }
+
+    if (!title || !description || !event_date) {
+      console.warn('[EVENTS] Missing required fields in POST');
+      return res.status(400).json({ message: 'Missing required fields: title, description, event_date' });
     }
 
     const group_id = user.groups[0];

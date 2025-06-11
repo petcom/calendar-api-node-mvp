@@ -119,5 +119,37 @@
     "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-full.png",
     "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-small.png",
     "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-thumb.png"
+  },
+  {
+    "id": "20250611-70A3-001",
+    "title": "Chamber Music Party (6/14 2-5pm)",
+    "description": "Members of the Tempe Symphony - Summer Chamber Music Soiree",
+    "long_description": "If you're with the Tempe Symphony RSVP to the eventbrite and come have a great time! Park in whatever spots you find.  Enter through the side door - hopefully we'll have a sign :-)",
+    "event_date": "2025-06-14",
+    "display_from_date": "2025-06-11",
+    "tags": [
+      "sonar",
+      "rlc"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-thumb.png"
+  },
+  {
+    "id": "20250611-70A3-002",
+    "title": "Chamber Music Party (7/12 2-5pm)",
+    "description": "Members of the Tempe Symphony - Summer Chamber Music Soiree",
+    "long_description": "If you're with the Tempe Symphony RSVP to the eventbrite and come have a great time! Park in whatever spots you find.  Enter through the side door - hopefully we'll have a sign :-)",
+    "event_date": "2025-07-12",
+    "display_from_date": "2025-06-11",
+    "tags": [
+      "sonar",
+      "rlc"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-full.png",
+    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-thumb.png"
   }
 ]

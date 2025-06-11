@@ -15,7 +15,8 @@ const allowedOrigins = [
   'http://localhost:2369',
   'http://localhost:2368',
   'http://localhost:2370',
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'http://localhost:8180'
 ];
 
 const corsOptionsDelegate = function (req, callback) {

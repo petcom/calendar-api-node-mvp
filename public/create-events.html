@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create or Edit Event</title>
+  <style>
+    #eventList li.selected {
+      background-color: #eef;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Create or Edit Event</h1>
+
+  <a href="/manage-users-groups.html">Manage Users & Groups</a>
+
+  <div>
+    <h3>Existing Events</h3>
+    <ul id="eventList"></ul>
+  </div>
+
+  <form id="createEventForm">
+    <label>ID:</label><br>
+    <input type="text" name="id" id="eventId" readonly><br><br>
+    <button type="button" id="generateIdBtn">Generate ID</button><br><br>
+
+    <label>Title:</label><br>
+    <input type="text" name="title" required><br><br>
+
+    <label>Description:</label><br>
+    <input type="text" name="description" required><br><br>
+
+    <label>Long Description:</label><br>
+    <textarea name="long_description" rows="4"></textarea><br><br>
+
+    <label>Date (event_date):</label><br>
+    <input type="date" name="event_date" required><br><br>
+
+    <label>Display From Date:</label><br>
+    <input type="date" name="display_from_date"><br><br>
+
+    <label>Tags (comma separated):</label><br>
+    <input type="text" name="tags"><br><br>
+
+    <label>Group ID:</label><br>
+    <input type="text" name="group_id"><br><br>
+
+    <input type="hidden" name="full_image_url" id="imageUrl">
+    <input type="hidden" name="thumb_url" id="thumbUrl">
+    <input type="hidden" name="small_image_url" id="smallUrl">
+
+    <button type="submit">Save Event</button>
+    <button type="button" id="deleteEventBtn">Delete Selected Event</button>
+  </form>
+
+  <script>
+    let allEvents = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('authToken');
+
+      if (!token) {
+        alert('No token found! Please login first.');
+        return window.location.href = '/login.html';
+      }
+
+      await loadAndRenderEvents();
+
+      document.getElementById('createEventForm').addEventListener('submit', handleFormSubmit);
+      document.getElementById('deleteEventBtn').addEventListener('click', handleDelete);
+
+      document.getElementById('generateIdBtn').addEventListener('click', async () => {
+        const idInput = document.getElementById('eventId');
+        if (idInput.value) {
+          alert('ID already exists. Clear form to create a new event.');
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/token-prefix');
+          if (!res.ok) throw await res.json();
+
+          const prefix = await res.text();
+          const now = new Date();
+          const hhmmss = now.toTimeString().split(' ')[0].replace(/:/g, '');
+          const id = `${prefix}-${hhmmss}`;
+
+          idInput.value = id;
+        } catch (err) {
+          console.error('[ID GENERATION ERROR]', err);
+          alert('Failed to generate ID');
+        }
+      });
+    });
+
+    async function loadAndRenderEvents() {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/events', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const events = await response.json();
+        allEvents = events;
+
+        const ul = document.getElementById('eventList');
+        ul.innerHTML = '';
+
+        events.forEach(event => {
+          const li = document.createElement('li');
+          li.textContent = `${event.id} - ${event.title}`;
+          li.style.cursor = 'pointer';
+          li.addEventListener('click', () => {
+            loadEventToForm(event);
+            document.querySelectorAll('#eventList li').forEach(el => el.classList.remove('selected'));
+            li.classList.add('selected');
+          });
+          ul.appendChild(li);
+        });
+      } catch (err) {
+        console.error('[LOAD EVENTS ERROR]', err);
+      }
+    }
+
+    function loadEventToForm(event) {
+      const form = document.getElementById('createEventForm');
+      form.id.value = event.id || '';
+      form.title.value = event.title || '';
+      form.description.value = event.description || '';
+      form.long_description.value = event.long_description || '';
+      form.event_date.value = event.event_date || '';
+      form.display_from_date.value = event.display_from_date || '';
+      form.tags.value = (event.tags || []).join(', ');
+      form.group_id.value = event.group_id || '';
+      form.full_image_url.value = event.full_image_url || '';
+      form.thumb_url.value = event.thumb_url || '';
+      form.small_image_url.value = event.small_image_url || '';
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Missing auth token. Please log in again.');
+        return window.location.href = '/login.html';
+      }
+
+      const tags = (form.tags.value || '')
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(Boolean);
+
+      const eventData = {
+        id: form.id.value || undefined,
+        title: form.title.value,
+        description: form.description.value,
+        long_description: form.long_description.value,
+        event_date: form.event_date.value,
+        display_from_date: form.display_from_date.value,
+        tags,
+        group_id: form.group_id.value,
+        full_image_url: form.full_image_url.value,
+        thumb_url: form.thumb_url.value,
+        small_image_url: form.small_image_url.value
+      };
+
+      const method = form.id.value ? 'PUT' : 'POST';
+      const url = form.id.value ? `/api/events/${form.id.value}` : '/api/events';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(eventData)
+        });
+
+        const resultText = await res.text();
+        const result = JSON.parse(resultText);
+
+        if (!res.ok) throw result;
+
+        alert('Event saved successfully!');
+        form.reset();
+        await loadAndRenderEvents();
+      } catch (err) {
+        console.error('[SAVE ERROR]', err);
+        alert(err.message || 'Error saving event');
+      }
+    }
+
+    async function handleDelete() {
+      const id = document.getElementById('eventId').value;
+      if (!id) return alert('No event selected to delete.');
+
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Missing auth token. Please log in again.');
+        return window.location.href = '/login.html';
+      }
+
+      if (!confirm(`Are you sure you want to delete event "${id}"?`)) return;
+
+      try {
+        const res = await fetch(`/api/events/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const resultText = await res.text();
+        const result = JSON.parse(resultText);
+
+        if (!res.ok) throw result;
+
+        alert('Event deleted.');
+        document.getElementById('createEventForm').reset();
+        await loadAndRenderEvents();
+      } catch (err) {
+        console.error('[DELETE ERROR]', err);
+        alert(err.message || 'Error deleting event');
+      }
+    }
+  </script>
+</body>
+</html>

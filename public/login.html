@@ -16,33 +16,36 @@
     <button type="submit">Login</button>
   </form>
 
+  <p><a href="/manage-users-groups.html">Admin: Manage Groups & Users</a></p>
+
   <script>
-    const form = document.getElementById('loginForm');
-    form.addEventListener('submit', async (e) => {
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = new FormData(form);
+
+      const formData = new FormData(e.target);
       const data = new URLSearchParams(formData);
 
-      const response = await fetch('/api/jwtlogin', {
-        method: 'POST',
-        body: data,
-      });
+      try {
+        const response = await fetch('/api/jwtlogin', {
+          method: 'POST',
+          body: data,
+        });
 
-      if (response.ok) {
+        if (!response.ok) {
+          const errorText = await response.text();
+          return alert('Login failed: ' + errorText);
+        }
+
         const { token } = await response.json();
-        // Redirect to event form with token
-        window.location.href = `/createEventForm.html?token=${token}`;
-        //store token (not sure this is the right token)
         localStorage.setItem('authToken', token);
-        window.location.href = '/loader.html';
-      } else {
-        const text = await response.text();
-        alert('Login failed: ' + text);
+
+        // Redirect to main secured app page
+        window.location.href = '/create-events.html';
+      } catch (err) {
+        console.error('[LOGIN ERROR]', err);
+        alert('An unexpected error occurred.');
       }
     });
   </script>
-
-<p><a href="/groupAdmin.html">Admin: Manage Groups & Users</a></p>
-
 </body>
 </html>

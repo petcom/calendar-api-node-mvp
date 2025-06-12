@@ -7,18 +7,23 @@
 <body>
   <p>Loading...</p>
 
-  <script>
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      alert('No auth token found. Redirecting to login.');
-      window.location.href = '/login.html';
-    }
+ <script>
+  const token = localStorage.getItem('authToken');
+  const params = new URLSearchParams(window.location.search);
+  const page = params.get('page') || 'createEventForm.html';
 
-    fetch('/secure/createEventForm.html', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
+  console.log('[LOADER] Token in localStorage:', token);
+  
+  if (!token) {
+    alert('No auth token found. Redirecting to login.');
+    window.location.href = '/login.html';
+  }
+
+  fetch(`/secure/${page}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
     .then(res => {
       if (!res.ok) throw new Error('Unauthorized');
       return res.text();
@@ -31,10 +36,10 @@
     .catch(err => {
       console.error('[LOADER] Error:', err);
       document.body.innerHTML = `<pre style="color: red;">Authorization Failed: ${err.message}</pre>`;
-      //alert('You are not authorized. Please login again.');
       localStorage.removeItem('authToken');
       window.location.href = '/login.html';
     });
-  </script>
+</script>
+
 </body>
 </html>

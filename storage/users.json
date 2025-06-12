@@ -15,14 +15,6 @@
     ]
   },
   {
-    "username": "adam4",
-    "password": "$2b$10$BJvXrclZ4V8IM5e64GOXvOGzLsCzu4ChSPbTZ2mRXSR7lwFb.Ykx.",
-    "token_expiry": "5m",
-    "groups": [
-      "g1"
-    ]
-  },
-  {
     "username": "admin",
     "password": "$2b$10$qD/Xl0F6rjb3u/FXyOVZ9ex7ChoyaYaNoSIDTmcsq6fs9DVY3U2Ga",
     "token_expiry": "2h",
@@ -30,5 +22,14 @@
     "groups": [
       "g1"
     ]
+  },
+  {
+    "username": "testy",
+    "password": "$2b$10$GyWqNJtbSbEXmSdsrUrzu.7.JF3hzKScfmX.emDh/ax5PKohH4YEy",
+    "full_name": "testy",
+    "groups": [
+      "g1745877047967"
+    ],
+    "token_expiry": "5m"
   }
 ]

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Users & Groups</title>
+  <style>
+    ul { list-style: none; padding: 0; }
+    li { cursor: pointer; margin: 0.25em 0; }
+    .selected { background-color: #eef; font-weight: bold; }
+    .section { border: 1px solid #ccc; padding: 1em; margin-bottom: 2em; }
+    button { margin-top: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>Group & User Administration</h1>
+  <p><a href="/create-events.html">← Back to Event Manager</a></p>
+
+  <div class="section">
+    <h2>Groups</h2>
+    <button onclick="createNewGroup()">+ Create New Group</button>
+    <ul id="groupList"></ul>
+    <div id="groupFormContainer" style="display:none;">
+      <label>Group ID:</label><br>
+      <input type="text" id="groupId"><br>
+      <label>Group Name:</label><br>
+      <input type="text" id="groupName"><br><br>
+      <button onclick="saveGroup()">Save Group</button>
+      <button onclick="deleteGroup()">Delete Group</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Users</h2>
+    <button onclick="showAllUsers()">Show All Users</button>
+    <button onclick="createNewUser()">+ Create New User</button>
+    <ul id="userList"></ul>
+    <div id="userFormContainer" style="display:none;">
+      <label>Username:</label><br>
+      <input type="text" id="username"><br>
+      <label>Full Name:</label><br>
+      <input type="text" id="fullName"><br>
+      <label>Password:</label><br>
+      <input type="password" id="password" placeholder="Set new password (optional)"><br>
+      <label>Token Expiry:</label><br>
+      <input type="text" id="tokenExpiry" placeholder="e.g., 10m or 1h"><br>
+      <fieldset>
+        <legend>Group Membership</legend>
+        <div id="groupCheckboxes"></div>
+      </fieldset><br>
+      <button onclick="saveUser()">Save User</button>
+      <button onclick="deleteUser()">Delete User</button>
+    </div>
+  </div>
+
+  <script>
+    let token = null;
+    let groups = [];
+    let users = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('No token found. Please login.');
+        return window.location.href = '/login.html';
+      }
+
+      try {
+        const res = await fetch('/api/users/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Invalid or expired token');
+      } catch (err) {
+        alert('Session expired. Please login again.');
+        return window.location.href = '/login.html';
+      }
+
+      await loadGroups();
+      await loadUsers();
+    });
+
+    async function loadGroups() {
+      try {
+        const res = await fetch('/api/groups', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        groups = await res.json();
+        const ul = document.getElementById('groupList');
+        ul.innerHTML = '';
+
+        groups.forEach(group => {
+          const li = document.createElement('li');
+          li.textContent = `${group.id} - ${group.name}`;
+          li.onclick = () => {
+            showGroupForm(group);
+            highlightSelectedGroup(li);
+            filterUsersByGroup(group.id);
+          };
+          ul.appendChild(li);
+        });
+      } catch (err) {
+        console.error('[GROUP LOAD ERROR]', err);
+        alert('Failed to load groups');
+      }
+    }
+
+    function highlightSelectedGroup(selectedLi) {
+      document.querySelectorAll('#groupList li').forEach(li => li.classList.remove('selected'));
+      selectedLi.classList.add('selected');
+    }
+
+    function showGroupForm(group) {
+      document.getElementById('groupFormContainer').style.display = 'block';
+      document.getElementById('groupId').value = group.id;
+      document.getElementById('groupName').value = group.name;
+    }
+    function createNewGroup() {
+      document.getElementById('groupFormContainer').style.display = 'block';
+      document.getElementById('groupId').readOnly = false; // allow editing
+      document.getElementById('groupId').value = '';
+      document.getElementById('groupName').value = '';
+    }
+
+
+async function saveGroup() {
+  const id = document.getElementById('groupId').value;
+  const name = document.getElementById('groupName').value;
+  const isNew = !groups.find(g => g.id === id);
+
+  const method = isNew ? 'POST' : 'PUT';
+  const url = isNew ? '/api/groups' : `/api/groups/${id}`;
+  const payload = isNew ? { id, name } : { name };
+
+  try {
+    await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    alert(`Group ${isNew ? 'created' : 'updated'}`);
+    await loadGroups();
+
+    const userFormVisible = document.getElementById('userFormContainer').style.display !== 'none';
+    if (userFormVisible) {
+      const username = document.getElementById('username').value;
+      const user = users.find(u => u.username === username);
+      renderGroupCheckboxes(user || {});
+    }
+
+  } catch (err) {
+    console.error('[GROUP SAVE ERROR]', err);
+    alert('Failed to save group.');
+  }
+}
+
+
+    async function loadUsers() {
+      try {
+        const res = await fetch('/api/users', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        users = await res.json();
+        renderUserList(users);
+      } catch (err) {
+        console.error('[USER LOAD ERROR]', err);
+        alert('Failed to load users');
+      }
+    }
+
+    function showAllUsers() {
+      renderUserList(users);
+      document.querySelectorAll('#groupList li').forEach(li => li.classList.remove('selected'));
+    }
+
+    function filterUsersByGroup(groupId) {
+      const filtered = users.filter(user => (user.groups || []).includes(groupId));
+      renderUserList(filtered);
+    }
+
+    function renderUserList(userArray) {
+      const ul = document.getElementById('userList');
+      ul.innerHTML = '';
+      userArray.forEach(user => {
+        const li = document.createElement('li');
+        li.textContent = user.username;
+        li.onclick = () => showUserForm(user);
+        ul.appendChild(li);
+      });
+    }
+
+    function showUserForm(user) {
+      document.getElementById('userFormContainer').style.display = 'block';
+      document.getElementById('username').value = user.username;
+      document.getElementById('username').readOnly = true;
+      document.getElementById('fullName').value = user.full_name || '';
+      document.getElementById('password').value = '';
+      document.getElementById('tokenExpiry').value = user.token_expiry || '';
+      renderGroupCheckboxes(user);
+    }
+
+    function createNewUser() {
+      document.getElementById('userFormContainer').style.display = 'block';
+      document.getElementById('username').value = '';
+      document.getElementById('username').readOnly = false;
+      document.getElementById('fullName').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('tokenExpiry').value = '';
+      renderGroupCheckboxes({});
+    }
+
+  async function saveUser() {
+    const username = document.getElementById('username').value;
+    const full_name = document.getElementById('fullName').value;
+    const password = document.getElementById('password').value;
+    const token_expiry = document.getElementById('tokenExpiry').value;
+    const checkboxes = document.querySelectorAll('#groupCheckboxes input[type=checkbox]');
+    const selectedGroups = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+
+    const payload = { username, full_name, token_expiry, groups: selectedGroups };
+    if (password) payload.password = password;
+
+    const isNew = !users.find(u => u.username === username);
+    const method = isNew ? 'POST' : 'PUT';
+    const url = isNew ? '/api/users' : `/api/users/${username}`;
+
+    try {
+      await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      alert(`User ${isNew ? 'created' : 'updated'}`);
+      await loadUsers();
+    } catch (err) {
+      console.error('[USER SAVE ERROR]', err);
+      alert('Failed to save user.');
+    }
+  }
+
+
+    async function deleteGroup() {
+      const id = document.getElementById('groupId').value;
+      if (!id) return alert('No group selected.');
+      if (!confirm(`Are you sure you want to delete group "${id}"?`)) return;
+
+      try {
+        await fetch(`/api/groups/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        alert('Group deleted');
+        document.getElementById('groupFormContainer').style.display = 'none';
+        await loadGroups();
+      } catch (err) {
+        console.error('[DELETE GROUP ERROR]', err);
+        alert('Failed to delete group.');
+      }
+    }
+
+    async function deleteUser() {
+      const username = document.getElementById('username').value;
+      if (!username) return alert('No user selected.');
+      if (!confirm(`Are you sure you want to delete user "${username}"?`)) return;
+
+      try {
+        await fetch(`/api/users/${username}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        alert('User deleted');
+        document.getElementById('userFormContainer').style.display = 'none';
+        await loadUsers();
+      } catch (err) {
+        console.error('[DELETE USER ERROR]', err);
+        alert('Failed to delete user.');
+      }
+    }
+
+    function renderGroupCheckboxes(user) {
+      const container = document.getElementById('groupCheckboxes');
+      container.innerHTML = '';
+      groups.forEach(group => {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = group.id;
+        checkbox.id = `group_${group.id}`;
+        checkbox.checked = user?.groups?.includes(group.id) || false;
+
+        const label = document.createElement('label');
+        label.htmlFor = checkbox.id;
+        label.textContent = group.name;
+
+        container.appendChild(checkbox);
+        container.appendChild(label);
+        container.appendChild(document.createElement('br'));
+      });
+    }
+  </script>
+</body>
+</html>

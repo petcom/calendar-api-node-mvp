@@ -15,20 +15,21 @@ router.get('/groups', async (req, res) => {
 
 // POST /api/groups
 router.post('/groups', async (req, res) => {
-  const { name } = req.body;
+  const { name, parentId = 'root' } = req.body;
   if (!name) return res.status(400).send('Missing group name');
 
   const groups = await loadJson(GROUPS_FILE);
   const newGroup = {
     id: 'g' + Date.now(),
     name,
-    parentId: 'g1'
+    parentId
   };
   groups.push(newGroup);
   await saveJson(GROUPS_FILE, groups);
 
   res.sendStatus(201);
 });
+
 
 // POST /api/groups/assign
 router.post('/groups/assign', async (req, res) => {
@@ -48,6 +49,25 @@ router.post('/groups/assign', async (req, res) => {
   });
 
   await saveJson(USERS_FILE, users);
+  res.sendStatus(200);
+});
+
+// PUT /api/groups/:id
+router.put('/groups/:id', async (req, res) => {
+  const groupId = req.params.id;
+  const { name, parentId } = req.body;
+
+  if (!name) return res.status(400).send('Missing group name');
+
+  const groups = await loadJson(GROUPS_FILE);
+  const group = groups.find(g => g.id === groupId);
+
+  if (!group) return res.status(404).send('Group not found');
+
+  group.name = name;
+  if (parentId !== undefined) group.parentId = parentId;
+
+  await saveJson(GROUPS_FILE, groups);
   res.sendStatus(200);
 });
 

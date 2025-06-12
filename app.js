@@ -63,6 +63,9 @@ app.use('/api', require('./routes/users'));
 app.use('/api', require('./routes/groups'));
 app.use('/api', require('./routes/auth'));
 app.use('/api', require('./routes/internal'));
+app.use('/api', require('./routes/token'));
+app.use('/', require('./routes/secure'));
+
 
 app.get('/', (req, res) => {
   res.redirect('/login.html');

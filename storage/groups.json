@@ -1,8 +1,18 @@
 [
   {
-    "id": "g1",
+  "id": "root",
+  "name": "All Groups",
+  "parentId": null
+  },
+  {
+    "id": "admin",
     "name": "Master Admins",
-    "parentId": null
+    "parentId": "root"
+  },
+   {
+    "id": "g1",
+    "name": "First Group",
+    "parentId": "root"
   },
   {
     "id": "g1745877047967",

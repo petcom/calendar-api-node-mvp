@@ -120,16 +120,21 @@ router.get('/events', async (req, res) => {
 
     const tagParam = req.query.tag;
     const useAndLogic = req.query.logic === 'and';
-    const now = new Date();
-    const startDate = req.query.startDate ? new Date(req.query.startDate) : now;
-    const endDate = req.query.endDate ? new Date(req.query.endDate) : new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    console.log(`[EVENTS:GET] User ${user.username}, Tags: ${tagParam}, Dates: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+    const startDate = req.query.startDate ? new Date(req.query.startDate) : null;
+    const endDate = req.query.endDate ? new Date(req.query.endDate) : null;
+    const applyDateFilter = !!startDate || !!endDate;
 
-    const allEvents = await loadJson(EVENTS_FILE);
-    const visibleEvents = user.groups.includes('g1')
-      ? allEvents
-      : allEvents.filter(e => user.groups.includes(e.group_id));
+    console.log(`[EVENTS:GET] User ${user.username}, Tags: ${tagParam}, Dates: ${startDate?.toISOString() || 'none'} to ${endDate?.toISOString() || 'none'}`);
+
+
+    const allGroups = await loadJson(GROUPS_FILE);
+    const allowedGroupIds = user.groups.includes('admin')
+      ? allGroups.map(g => g.id) // allow all for admin
+      : user.groups.flatMap(groupId => getAllDescendantGroupIds(allGroups, groupId));
+
+    const visibleEvents = allEvents.filter(e => allowedGroupIds.includes(e.group_id));
+
 
     const filteredEvents = filterAndSortEvents(visibleEvents, {
       startDate,
@@ -164,10 +169,13 @@ router.post('/events', async (req, res) => {
 
     console.log(`[EVENTS:POST] User ${user.username}, Tags: ${tags}, Dates: ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
-    const allEvents = await loadJson(EVENTS_FILE);
-    const visibleEvents = user.groups.includes('g1')
-      ? allEvents
-      : allEvents.filter(e => user.groups.includes(e.group_id));
+    const allGroups = await loadJson(GROUPS_FILE);
+    const allowedGroupIds = user.groups.includes('admin')
+      ? allGroups.map(g => g.id) // allow all for admin
+      : user.groups.flatMap(groupId => getAllDescendantGroupIds(allGroups, groupId));
+
+    const visibleEvents = allEvents.filter(e => allowedGroupIds.includes(e.group_id));
+
 
     const filteredEvents = filterAndSortEvents(visibleEvents, {
       startDate,
@@ -198,11 +206,13 @@ router.get('/upcoming-events', async (req, res) => {
     const tagParams = req.query.tag;
     const useAndLogic = req.query.logic === 'and';
 
-    const allEvents = await loadJson(EVENTS_FILE);
+    const allGroups = await loadJson(GROUPS_FILE);
+    const allowedGroupIds = user.groups.includes('admin')
+      ? allGroups.map(g => g.id) // allow all for admin
+      : user.groups.flatMap(groupId => getAllDescendantGroupIds(allGroups, groupId));
 
-    const visibleEvents = user.groups.includes('g1')
-      ? allEvents
-      : allEvents.filter(e => user.groups.includes(e.group_id));
+    const visibleEvents = allEvents.filter(e => allowedGroupIds.includes(e.group_id));
+
 
     const tagArray = tagParams
       ? Array.isArray(tagParams)
@@ -235,11 +245,13 @@ router.post('/upcoming-events', async (req, res) => {
     const { tags = [], tag_logic = 'or' } = req.body;
     const useAndLogic = tag_logic === 'and';
 
-    const allEvents = await loadJson(EVENTS_FILE);
+    const allGroups = await loadJson(GROUPS_FILE);
+    const allowedGroupIds = user.groups.includes('admin')
+      ? allGroups.map(g => g.id) // allow all for admin
+      : user.groups.flatMap(groupId => getAllDescendantGroupIds(allGroups, groupId));
 
-    const visibleEvents = user.groups.includes('g1')
-      ? allEvents
-      : allEvents.filter(e => user.groups.includes(e.group_id));
+    const visibleEvents = allEvents.filter(e => allowedGroupIds.includes(e.group_id));
+
 
     const upcoming = filterAndSortEvents(visibleEvents, {
       startDate: new Date(),
@@ -274,7 +286,10 @@ router.post('/events', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields: title, description, event_date' });
     }
 
-    const group_id = user.groups[0];
+    const group_id = user.groups?.[0];
+      if (!group_id) {
+        return res.status(400).json({ message: 'User must be assigned to at least one group' });
+      }
     const cleanTags = Array.isArray(tags)
       ? tags.map(t => typeof t === 'string' ? t.trim().toLowerCase() : null).filter(Boolean)
       : [];
@@ -305,5 +320,63 @@ router.post('/events', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+// PUT /api/events/:id
+router.put('/events/:id', async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const user = await getUserFromAuthHeader(req);
+    if (!user) {
+      return res.status(401).json({ message: 'Missing or invalid token' });
+    }
+
+    const {
+      title, description, long_description,
+      event_date, display_from_date, tags,
+      full_image_url, small_image_url, thumb_image_url, thumb_url
+    } = req.body;
+
+    if (!title || !description || !event_date) {
+      return res.status(400).json({ message: 'Missing required fields: title, description, event_date' });
+    }
+
+    const events = await loadJson(EVENTS_FILE);
+    const index = events.findIndex(e => e.id === eventId);
+
+    const cleanTags = Array.isArray(tags)
+      ? tags.map(t => typeof t === 'string' ? t.trim().toLowerCase() : null).filter(Boolean)
+      : [];
+
+    const updatedEvent = {
+      id: eventId,
+      title: title.trim(),
+      description: description.trim(),
+      long_description: long_description || '',
+      event_date,
+      display_from_date: display_from_date || null,
+      tags: cleanTags,
+      group_id: user.groups[0],
+      full_image_url: full_image_url || '',
+      small_image_url: small_image_url || full_image_url || '',
+      thumb_image_url: thumb_image_url || thumb_url || ''
+    };
+
+    if (index !== -1) {
+      events[index] = updatedEvent;
+      console.log(`[EVENTS] Updated existing event: ${eventId}`);
+    } else {
+      events.push(updatedEvent);
+      console.log(`[EVENTS] Added new event with ID: ${eventId}`);
+    }
+
+    await saveJson(EVENTS_FILE, events);
+    res.status(200).json(updatedEvent);
+
+  } catch (err) {
+    console.error('[EVENTS] PUT error:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = router;

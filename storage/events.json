@@ -137,7 +137,11 @@
     "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-thumb.png"
   },
   {
+<<<<<<< HEAD
     "id": "20250611-70A3-002",
+=======
+    "id": "20250611-F325-001",
+>>>>>>> sfo_prod
     "title": "Chamber Music Party (7/12 2-5pm)",
     "description": "Members of the Tempe Symphony - Summer Chamber Music Soiree",
     "long_description": "If you're with the Tempe Symphony RSVP to the eventbrite and come have a great time! Park in whatever spots you find.  Enter through the side door - hopefully we'll have a sign :-)",
@@ -151,5 +155,24 @@
     "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-full.png",
     "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-small.png",
     "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-thumb.png"
+<<<<<<< HEAD
+=======
+  },
+  {
+    "id": "20250611-F325-163908",
+    "title": "test title",
+    "description": "test description",
+    "long_description": "long description",
+    "event_date": "2025-07-13",
+    "display_from_date": "2025-06-22",
+    "tags": [
+      "sonar",
+      "test"
+    ],
+    "group_id": "g1",
+    "full_image_url": "",
+    "small_image_url": "",
+    "thumb_image_url": ""
+>>>>>>> sfo_prod
   }
 ]

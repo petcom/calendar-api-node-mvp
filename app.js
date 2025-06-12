@@ -8,6 +8,8 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
+
+
 //
 // ✅ Define CORS delegate early
 //
@@ -36,6 +38,10 @@ const corsOptionsDelegate = function (req, callback) {
   callback(null, corsOptions);
 };
 
+//for tracking ips behind a reverse proxy
+app.set('trust proxy', true);
+
+
 //
 // ✅ Use CORS middleware early
 //
@@ -57,6 +63,10 @@ app.use('/api', require('./routes/events'));
 app.use('/api', require('./routes/users'));
 app.use('/api', require('./routes/groups'));
 app.use('/api', require('./routes/auth'));
+app.use('/api', require('./routes/internal'));
+app.use('/api', require('./routes/token'));
+app.use('/', require('./routes/secure'));
+
 
 app.get('/', (req, res) => {
   res.redirect('/login.html');

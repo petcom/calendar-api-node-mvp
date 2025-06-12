@@ -1,37 +1,29 @@
-function filterAndSortEvents(events, options = {}) {
-  const {
-    startDate = new Date('2000-01-01'),
-    endDate = new Date('2100-01-01'),
-    tagArray = [],
-    useAndLogic = false
-  } = options;
-
+function filterAndSortEvents(events, {
+  startDate = null,
+  endDate = null,
+  tagArray = [],
+  useAndLogic = false,
+  applyDateFilter = true
+} = {}) {
   return events
     .filter(event => {
-      // Enforce presence of required date fields
-      if (!event.event_date) return false;
-
       const eventDate = new Date(event.event_date);
-      const displayFromDate = new Date(event.display_from_date || startDate);
+      if (isNaN(eventDate)) return false;
 
-      if (
-        isNaN(eventDate) ||
-        isNaN(displayFromDate) ||
-        eventDate < startDate ||
-        eventDate > endDate ||
-        displayFromDate > endDate
-      ) {
-        return false;
+      // Optional date filtering
+      if (applyDateFilter) {
+        if (startDate && eventDate < new Date(startDate)) return false;
+        if (endDate && eventDate > new Date(endDate)) return false;
       }
 
-      // Tag filtering
-      if (tagArray.length > 0 && Array.isArray(event.tags)) {
-        const normalizedEventTags = event.tags.map(t => t.toLowerCase());
-        const normalizedFilterTags = tagArray.map(t => t.toLowerCase());
+      // Optional tag filtering
+      if (tagArray.length > 0) {
+        const eventTags = (event.tags || []).map(t => t.toLowerCase());
+        const matchTags = tagArray.map(t => t.toLowerCase());
 
         return useAndLogic
-          ? normalizedFilterTags.every(tag => normalizedEventTags.includes(tag))
-          : normalizedFilterTags.some(tag => normalizedEventTags.includes(tag));
+          ? matchTags.every(tag => eventTags.includes(tag))
+          : matchTags.some(tag => eventTags.includes(tag));
       }
 
       return true;

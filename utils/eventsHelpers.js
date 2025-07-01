@@ -10,13 +10,11 @@ function filterAndSortEvents(events, {
       const eventDate = new Date(event.event_date);
       if (isNaN(eventDate)) return false;
 
-      // Optional date filtering
       if (applyDateFilter) {
-        if (startDate && eventDate < new Date(startDate)) return false;
-        if (endDate && eventDate > new Date(endDate)) return false;
+        if (startDate && eventDate < startDate) return false;
+        if (endDate && eventDate > endDate) return false;
       }
 
-      // Optional tag filtering
       if (tagArray.length > 0) {
         const eventTags = (event.tags || []).map(t => t.toLowerCase());
         const matchTags = tagArray.map(t => t.toLowerCase());
@@ -30,5 +28,6 @@ function filterAndSortEvents(events, {
     })
     .sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
 }
+
 
 module.exports = { filterAndSortEvents };

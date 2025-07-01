@@ -128,6 +128,18 @@ router.post('/events/query', async (req, res) => {
       : user.groups.flatMap(gid => getAllDescendantGroupIds(allGroups, gid));
 
     const visibleEvents = allEvents.filter(e => allowedGroupIds.includes(e.group_id));
+
+    console.log('[POST /events/query] Filters:', {
+  rawStartDate: s,
+  rawEndDate: e,
+  parsedStartDate: startDate,
+  parsedEndDate: endDate,
+  applyDateFilter,
+  tag_logic,
+  tags
+});
+
+
     const filtered = filterAndSortEvents(visibleEvents, {
       startDate,
       endDate,

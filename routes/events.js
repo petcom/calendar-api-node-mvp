@@ -116,12 +116,7 @@ router.post('/events/query', async (req, res) => {
 
     const allEvents = await loadJson(EVENTS_FILE);
     const allGroups = await loadJson(GROUPS_FILE);
-    const { tags = [], tag_logic = 'or', startDate: s, endDate: e } = req.body;
-
-    const useAndLogic = tag_logic === 'and';
-    const startDate = s ? new Date(s) : null;
-    const endDate = e ? new Date(e) : null;
-    const applyDateFilter = !!startDate || !!endDate;
+    const { tags = [], tag_logic = 'or', startDate: s, endDate: e, event_id } = req.body;
 
     const allowedGroupIds = user.groups.includes('admin')
       ? allGroups.map(g => g.id)
@@ -129,16 +124,37 @@ router.post('/events/query', async (req, res) => {
 
     const visibleEvents = allEvents.filter(e => allowedGroupIds.includes(e.group_id));
 
-    console.log('[POST /events/query] Filters:', {
-  rawStartDate: s,
-  rawEndDate: e,
-  parsedStartDate: startDate,
-  parsedEndDate: endDate,
-  applyDateFilter,
-  tag_logic,
-  tags
-});
+    // If event_id is provided, return just that specific event
+    if (event_id) {
+      console.log('[POST /events/query] Looking for event with ID:', event_id);
+      
+      const event = visibleEvents.find(e => e.id === event_id || String(e.id) === String(event_id));
+      
+      if (!event) {
+        console.log('[POST /events/query] Event not found with ID:', event_id);
+        console.log('[POST /events/query] Available event IDs:', visibleEvents.map(e => e.id));
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      console.log('[POST /events/query] Found event:', event.title);
+      return res.json([normalizeEvent(event)]);
+    }
 
+    // Otherwise, proceed with filtering by tags and dates
+    const useAndLogic = tag_logic === 'and';
+    const startDate = s ? new Date(s) : null;
+    const endDate = e ? new Date(e) : null;
+    const applyDateFilter = !!startDate || !!endDate;
+
+    console.log('[POST /events/query] Filters:', {
+      rawStartDate: s,
+      rawEndDate: e,
+      parsedStartDate: startDate,
+      parsedEndDate: endDate,
+      applyDateFilter,
+      tag_logic,
+      tags
+    });
 
     const filtered = filterAndSortEvents(visibleEvents, {
       startDate,

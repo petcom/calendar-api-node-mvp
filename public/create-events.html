@@ -46,6 +46,9 @@
     <label>Group ID:</label><br>
     <input type="text" name="group_id"><br><br>
 
+    <label>Ticket URL:</label><br>
+    <input type="url" name="ticket_url" placeholder="https://example.com/tickets"><br><br>
+
     <input type="hidden" name="full_image_url" id="imageUrl">
     <input type="hidden" name="thumb_url" id="thumbUrl">
     <input type="hidden" name="small_image_url" id="smallUrl">
@@ -133,6 +136,7 @@
       form.display_from_date.value = event.display_from_date || '';
       form.tags.value = (event.tags || []).join(', ');
       form.group_id.value = event.group_id || '';
+      form.ticket_url.value = event.ticket_url || '';
       form.full_image_url.value = event.full_image_url || '';
       form.thumb_url.value = event.thumb_url || '';
       form.small_image_url.value = event.small_image_url || '';
@@ -161,6 +165,7 @@
         display_from_date: form.display_from_date.value,
         tags,
         group_id: form.group_id.value,
+        ticket_url: form.ticket_url.value,
         full_image_url: form.full_image_url.value,
         thumb_url: form.thumb_url.value,
         small_image_url: form.small_image_url.value

@@ -32,7 +32,8 @@ function normalizeEvent(event) {
     group_id: event.group_id,
     full_image_url: event.full_image_url || '',
     small_image_url: event.small_image_url || event.full_image_url || '',
-    thumb_image_url: event.thumb_image_url || event.thumb_url || ''
+    thumb_image_url: event.thumb_image_url || event.thumb_url || '',
+    ticket_url: event.ticket_url || ''
   };
 }
 
@@ -171,6 +172,33 @@ router.post('/events/query', async (req, res) => {
   }
 });
 
+router.post('/events', async (req, res) => {
+  try {
+    const user = await getUserFromAuthHeader(req);
+    if (!user) return res.status(401).json({ message: 'Unauthorized' });
+
+    const events = await loadJson(EVENTS_FILE);
+    
+    // Generate ID if not provided
+    const eventId = req.body.id || `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    const newEvent = {
+      ...req.body,
+      id: eventId,
+      group_id: req.body.group_id || user.groups[0] // Default to user's first group
+    };
+
+    events.push(newEvent);
+    await saveJson(EVENTS_FILE, events);
+    
+    console.log(`[POST /events] Event "${newEvent.title}" created by user ${user.username}`);
+    res.status(201).json(normalizeEvent(newEvent));
+  } catch (err) {
+    console.error('[POST /events] Error:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 router.put('/events/:id', async (req, res) => {
   try {
     const eventId = req.params.id;
@@ -197,6 +225,53 @@ router.put('/events/:id', async (req, res) => {
     res.status(200).json(updated);
   } catch (err) {
     console.error('[PUT /events/:id] Error:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+router.delete('/events/:id', async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const user = await getUserFromAuthHeader(req);
+    if (!user) return res.status(401).json({ message: 'Unauthorized' });
+
+    const allEvents = await loadJson(EVENTS_FILE);
+    const allGroups = await loadJson(GROUPS_FILE);
+
+    // Find the event to delete
+    const eventIndex = allEvents.findIndex(e => e.id === eventId);
+    if (eventIndex === -1) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    const eventToDelete = allEvents[eventIndex];
+
+    // Check if user has permission to delete this event (must have access to the event's group)
+    const allowedGroupIds = user.groups.includes('admin')
+      ? allGroups.map(g => g.id)
+      : user.groups.flatMap(gid => getAllDescendantGroupIds(allGroups, gid));
+
+    if (!allowedGroupIds.includes(eventToDelete.group_id)) {
+      return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this event' });
+    }
+
+    // Remove the event from the array
+    allEvents.splice(eventIndex, 1);
+
+    // Save the updated events back to the file
+    await saveJson(EVENTS_FILE, allEvents);
+
+    console.log(`[DELETE /events/${eventId}] Event "${eventToDelete.title}" deleted by user ${user.username}`);
+
+    res.json({ 
+      message: 'Event deleted successfully',
+      deletedEvent: {
+        id: eventToDelete.id,
+        title: eventToDelete.title
+      }
+    });
+  } catch (err) {
+    console.error('[DELETE /events/:id] Error:', err);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });

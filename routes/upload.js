@@ -22,7 +22,8 @@ function normalizeEvent(event) {
     group_id: event.group_id,
     full_image_url: event.full_image_url || '',
     small_image_url: event.small_image_url || event.full_image_url || '',
-    thumb_url: event.thumb_url || ''
+    thumb_url: event.thumb_url || '',
+    ticket_url: event.ticket_url || ''
   };
 }
 

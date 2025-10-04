@@ -6,20 +6,31 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+const ORIGIN_URL = process.env.ORIGIN_URL || 'http://localhost';
 
 
 
 //
 // ✅ Define CORS delegate early
 //
-const allowedOrigins = [
-  'http://localhost:2369',
-  'http://localhost:2368',
-  'http://localhost:2370',
-  'http://localhost:3000',
-  'http://localhost:8180'
-];
+const allowedOrigins = process.env.ALLOWED_PORTS 
+  ? process.env.ALLOWED_PORTS.split(',').map(port => `${ORIGIN_URL}:${port.trim()}`)
+  : [
+      `${ORIGIN_URL}:2368`,
+      `${ORIGIN_URL}:2369`,
+      `${ORIGIN_URL}:2370`,
+      `${ORIGIN_URL}:2371`,
+      `${ORIGIN_URL}:2372`,
+      `${ORIGIN_URL}:2373`,
+      `${ORIGIN_URL}:2374`,
+      `${ORIGIN_URL}:2375`,
+      `${ORIGIN_URL}:2376`,
+      `${ORIGIN_URL}:2377`,
+      `${ORIGIN_URL}:2378`,
+      `${ORIGIN_URL}:3000`,
+      `${ORIGIN_URL}:8180`
+    ];
 
 const corsOptionsDelegate = function (req, callback) {
   const origin = req.header('Origin');

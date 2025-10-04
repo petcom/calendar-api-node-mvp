@@ -52,23 +52,6 @@
     "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-004-thumb.png"
   },
   {
-    "id": "20250519-F325-005",
-    "title": "New Event 5",
-    "description": "Test Event",
-    "long_description": "Test Event Description",
-    "event_date": "2025-05-24",
-    "display_from_date": "2025-05-20",
-    "tags": [
-      "sonar",
-      "this",
-      "that"
-    ],
-    "group_id": "g1",
-    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-005-full.png",
-    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-005-small.png",
-    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-005-thumb.png"
-  },
-  {
     "id": "20250521-F325-001",
     "title": "Test Event 3",
     "description": "New event 3",
@@ -154,5 +137,59 @@
     "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-small.png",
     "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-thumb.png",
     "ticket_url": "https://example.com/tickets"
+  },
+  {
+    "id": "20250519-F325-005",
+    "title": "Beginning Dance - Level 1",
+    "description": "Beginning Dance, easy on the brain, and on the body",
+    "long_description": "Beginning Dance level 1 is for people starting again, looking to get some activity and find a new community. ",
+    "event_date": "2025-10-06T10:00",
+    "display_from_date": "2025-10-02",
+    "tags": [
+      "academy",
+      "dance",
+      "beginner"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-full.png",
+    "small_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-thumb.png",
+    "ticket_url": ""
+  },
+  {
+    "id": "20251003-DFC4-001",
+    "title": "Beginning Dance - Level 1",
+    "description": "Beginning Dance, easy on the brain, and on the body",
+    "long_description": "Beginning Dance level 1 is for people starting again, looking to get some activity and find a new community. ",
+    "event_date": "2025-10-08T10:00",
+    "display_from_date": "2025-10-02",
+    "tags": [
+      "academy",
+      "dance",
+      "beginner"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-full.png",
+    "small_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-thumb.png",
+    "ticket_url": ""
+  },
+  {
+    "id": "20251003-DFC4-002",
+    "title": "Beginning Dance - Level 1",
+    "description": "Beginning Dance, easy on the brain, and on the body",
+    "long_description": "Beginning Dance level 1 is for people starting again, looking to get some activity and find a new community. ",
+    "event_date": "2025-10-10T10:00",
+    "display_from_date": "2025-10-02",
+    "tags": [
+      "academy",
+      "dance",
+      "beginner"
+    ],
+    "group_id": "g1",
+    "full_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-full.png",
+    "small_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-small.png",
+    "thumb_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-thumb.png",
+    "ticket_url": ""
   }
 ]

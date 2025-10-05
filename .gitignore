@@ -13,6 +13,7 @@ package-lock.json
 .env.*.local
 
 # Storage (contains sensitive user data, tokens, events)
+
 storage/
 
 # Uploaded images
@@ -84,8 +85,10 @@ tmp/
 temp/
 *.tmp
 
-# Ghost backups (optional - uncomment if you don't want to track these)
-# ghost_backups/
+# Ghost backups and archives
+ghost_backups/
+ghost_backups/*.zip
+ghost_backups/*.tar.gz
 
 # SSL certificates (if you add any)
 *.pem

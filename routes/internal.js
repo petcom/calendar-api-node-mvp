@@ -1,12 +1,11 @@
 // routes/internal.js
 const express = require('express');
-const path = require('path');
-const { loadJson } = require('../utils/fileHelpers');
+const { loadJson, getStoragePath } = require('../utils/fileHelpers');
 const { filterAndSortEvents } = require('../utils/eventsHelpers');
 
 const router = express.Router();
 
-const EVENTS_FILE = path.join(__dirname, '..', 'storage', 'events.json');
+const EVENTS_FILE = getStoragePath('events.json');
 
 
 // === Rate limiter setup ===

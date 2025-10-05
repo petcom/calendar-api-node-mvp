@@ -1,14 +1,13 @@
 const express = require('express');
-const path = require('path');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const { loadJson, saveJson } = require('../utils/fileHelpers');
+const { loadJson, saveJson, getStoragePath } = require('../utils/fileHelpers');
 const authenticateJWT = require('../middleware/auth');
 
 const router = express.Router();
 
-const USERS_FILE = path.join(__dirname, '..', 'storage', 'users.json');
-const TOKENS_FILE = path.join(__dirname, '..', 'storage', 'tokens.json');
+const USERS_FILE = getStoragePath('users.json');
+const TOKENS_FILE = getStoragePath('tokens.json');
 
 // POST /api/register
 router.post('/register', async (req, res) => {

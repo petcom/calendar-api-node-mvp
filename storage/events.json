@@ -1,125 +1,5 @@
 [
-  {
-    "id": "20250519-F325-002",
-    "title": "New Title",
-    "description": "new Description",
-    "long_description": "here's a longer description",
-    "event_date": "2025-05-23",
-    "display_from_date": "2025-05-20",
-    "tags": [
-      "sonar",
-      "beefy",
-      "bigone"
-    ],
-    "group_id": "g1",
-    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-002-full.png",
-    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-002-small.png",
-    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-002-thumb.png"
-  },
-  {
-    "id": "20250519-F325-003",
-    "title": "New event Trois",
-    "description": "New Event Here People",
-    "long_description": "Here's a new event",
-    "event_date": "2025-05-23",
-    "display_from_date": "2025-05-19",
-    "tags": [
-      "sonar",
-      "test",
-      "me",
-      "you"
-    ],
-    "group_id": "g1",
-    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-003-full.png",
-    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-003-small.png",
-    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-003-thumb.png"
-  },
-  {
-    "id": "20250519-F325-004",
-    "title": "New Event 4",
-    "description": "New Event",
-    "long_description": "New Event here",
-    "event_date": "2025-05-21",
-    "display_from_date": "2025-05-19",
-    "tags": [
-      "sonar",
-      "this",
-      "that"
-    ],
-    "group_id": "g1",
-    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-004-full.png",
-    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-004-small.png",
-    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-004-thumb.png"
-  },
-  {
-    "id": "20250521-F325-001",
-    "title": "Test Event 3",
-    "description": "New event 3",
-    "long_description": "New Test Event 3",
-    "event_date": "2025-05-21",
-    "display_from_date": "2025-05-20",
-    "tags": [
-      "sonar",
-      "test",
-      "you",
-      "me"
-    ],
-    "group_id": "g1",
-    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-full.png",
-    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-small.png",
-    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250521-F325-001-thumb.png"
-  },
-  {
-    "id": "20250519-F325-001",
-    "title": "This is a new one",
-    "description": "this is new",
-    "long_description": "this is more new",
-    "event_date": "2025-05-20",
-    "display_from_date": "2025-05-19",
-    "tags": [
-      "sonar",
-      "beefy"
-    ],
-    "group_id": "g1",
-    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-001-full.png",
-    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-001-small.png",
-    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250519-F325-001-thumb.png"
-  },
-  {
-    "id": "20250520-F325-001",
-    "title": "test event",
-    "description": "dest tescription",
-    "long_description": "heres a long one",
-    "event_date": "2025-05-24",
-    "display_from_date": "2025-05-20",
-    "tags": [
-      "sonar",
-      "test",
-      "me",
-      "you"
-    ],
-    "group_id": "g1",
-    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-full.png",
-    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-small.png",
-    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250520-F325-001-thumb.png"
-  },
-  {
-    "id": "20250611-70A3-002",
-    "title": "Chamber Music Party (7/12 2-5pm)",
-    "description": "Members of the Tempe Symphony - Summer Chamber Music Soiree",
-    "long_description": "If you're with the Tempe Symphony RSVP to the eventbrite and come have a great time! Park in whatever spots you find.  Enter through the side door - hopefully we'll have a sign :-)",
-    "event_date": "2025-07-12",
-    "display_from_date": "2025-06-11",
-    "tags": [
-      "sonar",
-      "rlc"
-    ],
-    "group_id": "g1",
-    "full_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-full.png",
-    "small_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-small.png",
-    "thumb_image_url": "https://sonar-media.sfo3.digitaloceanspaces.com/images/20250611-70A3-001-thumb.png",
-    "ticket_url": "https://example.com/tickets"
-  },
+  
   {
     "id": "20250704-B835-001",
     "title": "Chamber Music Party (7/13 2-5pm)",
@@ -150,7 +30,7 @@
       "dance",
       "beginner"
     ],
-    "group_id": "g1",
+    "group_id": "g2",
     "full_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-full.png",
     "small_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-small.png",
     "thumb_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-thumb.png",
@@ -168,7 +48,7 @@
       "dance",
       "beginner"
     ],
-    "group_id": "g1",
+    "group_id": "g2",
     "full_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-full.png",
     "small_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-small.png",
     "thumb_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-thumb.png",
@@ -186,7 +66,7 @@
       "dance",
       "beginner"
     ],
-    "group_id": "g1",
+    "group_id": "g2",
     "full_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-full.png",
     "small_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-small.png",
     "thumb_image_url": "https://sonar-media.sfo3.cdn.digitaloceanspaces.com/images/zzz-dance-seated-couple-thumb.png",

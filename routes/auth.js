@@ -1,11 +1,10 @@
 // routes/auth.js
 const express = require('express');
 const bcrypt = require('bcrypt');
-const path = require('path');
 const { signToken } = require('../utils/jwtUtils');
-const { loadJson } = require('../utils/fileHelpers');
+const { loadJson, getStoragePath } = require('../utils/fileHelpers');
 
-const USERS_FILE = path.join(__dirname, '..', 'storage', 'users.json');
+const USERS_FILE = getStoragePath('users.json');
 const router = express.Router();
 
 router.post('/jwtlogin', async (req, res) => {

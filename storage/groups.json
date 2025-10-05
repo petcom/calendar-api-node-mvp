@@ -11,27 +11,17 @@
   },
   {
     "id": "g1",
-    "name": "First Group",
+    "name": "Sonar Group",
     "parentId": "root"
   },
   {
-    "id": "g1745877047967",
-    "name": "TestGroup",
+    "id": "g2",
+    "name": "RLA Group",
     "parentId": "g1"
   },
   {
-    "id": "g1745957679252",
-    "name": "TestGroup2",
+    "id": "g3",
+    "name": "RLC Group",
     "parentId": "g1"
-  },
-  {
-    "id": "testgroup",
-    "name": "group85",
-    "parentId": "root"
-  },
-  {
-    "id": "testgroup45",
-    "name": "group85",
-    "parentId": "root"
   }
 ]

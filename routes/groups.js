@@ -1,12 +1,11 @@
 const express = require('express');
-const path = require('path');
-const { loadJson, saveJson } = require('../utils/fileHelpers');
+const { loadJson, saveJson, getStoragePath } = require('../utils/fileHelpers');
 const authenticateJWT = require('../middleware/auth');
 
 const router = express.Router();
 
-const USERS_FILE = path.join(__dirname, '..', 'storage', 'users.json');
-const GROUPS_FILE = path.join(__dirname, '..', 'storage', 'groups.json');
+const USERS_FILE = getStoragePath('users.json');
+const GROUPS_FILE = getStoragePath('groups.json');
 
 // GET /api/groups - 🔐 protected
 router.get('/groups', authenticateJWT, async (req, res) => {

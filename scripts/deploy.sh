@@ -5,7 +5,9 @@ set -euo pipefail
 APP_USER="${APP_USER:-calendarapi}"
 APP_GROUP="${APP_GROUP:-$APP_USER}"
 
-SRC="${SRC:-$PWD}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_SRC="$(cd "$SCRIPT_DIR/.." && pwd)"
+SRC="${SRC:-$DEFAULT_SRC}"
 DEST_BASE="${DEST_BASE:-/srv/calendar-api}"
 DEST_APP="$DEST_BASE/app"
 DEST_LOGS="$DEST_BASE/logs"

@@ -74,12 +74,24 @@ EOF"
 fi
 
 # 4) Start (or reload) under the app user
-echo "==> Starting with PM2 (user: $APP_USER)"
+echo "==> Starting or reloading with PM2 (user: $APP_USER)"
 sudo -u "$APP_USER" -H bash -lc "
   set -e
   cd '$DEST_APP'
-  APP_NAME='$APP_NAME' ENTRY='$ENTRY' INSTANCES='$INSTANCES' EXEC_MODE='$EXEC_MODE' \
-    pm2 start ecosystem.config.cjs || pm2 reload ecosystem.config.cjs
+
+  # ensure pm2 is in PATH for the app user
+  command -v pm2 >/dev/null 2>&1 || { echo 'pm2 not in PATH for $APP_USER'; exit 1; }
+
+  export APP_NAME='$APP_NAME' ENTRY='$ENTRY' INSTANCES='$INSTANCES' EXEC_MODE='$EXEC_MODE'
+
+  if pm2 describe \"$APP_NAME\" >/dev/null 2>&1; then
+    echo '==> Reloading existing app'
+    pm2 reload \"$APP_NAME\" --update-env
+  else
+    echo '==> Starting new app from ecosystem'
+    pm2 start ecosystem.config.cjs --only \"$APP_NAME\" --update-env
+  fi
+
   pm2 save
 "
 
